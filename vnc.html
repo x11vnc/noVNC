@@ -67,6 +67,18 @@
     <script src="vendor/promise.js"></script>
     <script src="vendor/browser-es-module-loader/dist/browser-es-module-loader.js"></script>
     <script type="module" src="app/ui.js"></script>
+    <script>window.onbeforeunload = function (e) {
+            e = e || window.event;
+
+            // For IE and Firefox prior to version 4
+            if (e) {
+                e.returnValue = 'Sure?';
+            }
+
+            // For Safari
+            return 'Sure?';
+        };
+    </script>    
     <!-- end scripts -->
 </head>
 

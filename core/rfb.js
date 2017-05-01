@@ -59,10 +59,10 @@ export default function RFB(defaults) {
         // Psuedo-encoding settings
 
         //['JPEG_quality_lo',     -32 ],
-        ['JPEG_quality_med',      -26 ],
-        //['JPEG_quality_hi',     -23 ],
-        //['compress_lo',        -255 ],
-        ['compress_hi',          -254 ],
+        // ['JPEG_quality_med',      -26 ],
+        ['JPEG_quality_hi',     -23 ],
+        ['compress_lo',        -255 ],
+        // ['compress_hi',          -254 ],
         //['compress_max',       -247 ],
 
         ['DesktopSize',          -223 ],

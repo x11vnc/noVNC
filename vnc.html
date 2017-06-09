@@ -343,5 +343,19 @@
         <source src="app/sounds/bell.oga" type="audio/ogg">
         <source src="app/sounds/bell.mp3" type="audio/mpeg">
     </audio>
+
+    <script>
+        // Disable escape key
+        document.onkeydown = function (e) {
+            var code = e.keyCode || e.charCode;
+            if (code == 27) {
+                e.preventDefault();
+                UI.rfb.sendKey(KeyTable.XK_Escape, "Escape");
+                return false;
+              }
+              return true;
+        };
+    </script>
+
  </body>
 </html>

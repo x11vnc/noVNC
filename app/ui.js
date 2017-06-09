@@ -428,7 +428,7 @@ var UI = {
 
         switch (state) {
             case 'connecting':
-                // XJ: Verification of closing window and disable escape key
+                // XJ: Verification of closing window
                 window.onbeforeunload = function (e) {
                     e = e || window.event;
                     // For IE and Firefox prior to version 4
@@ -438,16 +438,6 @@ var UI = {
 
                       // For Safari
                       return 'Sure?';
-                };
-                // Disable escape key
-                document.getElementById('noVNC_screen').onkeydown = function (e) {
-                    var code = e.keyCode || e.charCode;
-                    if (code == 27) {
-                        e.preventDefault();
-                        UI.rfb.sendKey(KeyTable.XK_Escape, "Escape");
-                        return false;
-                    }
-                    return true;
                 };
                 // XJ Done
 
@@ -473,7 +463,6 @@ var UI = {
             case 'disconnected':
                 // XJ: Disable verification of closing window
                 window.onbeforeunload = function (e) {};
-                document.onkeydown = function (e) { return true; };
                 // XJ Done
 
                 UI.showStatus(_("Disconnected"));
@@ -536,9 +525,10 @@ var UI = {
                 .classList.remove('noVNC_hidden');
         }
 
-        // XJ: Hide Power button for x11vnc in Docker image
-        document.getElementById('noVNC_xvp_button')
-            .classList.add("noVNC_hidden");
+        // XJ Hide VNC button
+        if (true) {
+            UI.updateXvpButton(0);
+        }
         // XJ Done
 
         // State change disables viewport dragging.

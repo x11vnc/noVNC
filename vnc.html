@@ -78,8 +78,8 @@
         });
     </script>
     <!-- actual script modules -->
-    <script type="module" src="app/ui.js"></script>
-    <script>window.onbeforeunload = function (e) {
+    <script type="module" src="app/ui.js">
+        window.onbeforeunload = function (e) {
             if (UI.connected) {
               e = e || window.event;
 
@@ -88,15 +88,18 @@
                   e.returnValue = 'Sure?';
               }
             }
-        }
+        };
 
         // Disable escape key
-        document.onkeydown = function (evt) {
-            if (evt.keyCode == 27) {
-                evt.preventDefault();
-                // UI.rfb.sendKey(KeyTable.XK_Escape, "Escape");
+        document.onkeydown = function (e) {
+            var code = e.charCode || e.keyCode;
+            if (code == 27) {
+                e.preventDefault();
+                UI.sendEsc();
+                return false;
             }
-        }
+            return true;
+        };
     </script>
     <!-- end scripts -->
 </head>

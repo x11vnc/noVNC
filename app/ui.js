@@ -979,8 +979,10 @@ var UI = {
     // Disable/enable XVP button
     updateXvpButton: function(ver) {
         if (ver >= 1 && !UI.rfb.get_view_only()) {
+            /* Disable enabling noVNC_hidden
             document.getElementById('noVNC_xvp_button')
                 .classList.remove("noVNC_hidden");
+            */
         } else {
             document.getElementById('noVNC_xvp_button')
                 .classList.add("noVNC_hidden");

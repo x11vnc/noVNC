@@ -37,7 +37,7 @@ var UI = {
     controlbarMouseDownClientY: 0,
     controlbarMouseDownOffsetY: 0,
 
-    isSafari: false,
+    isSafariOrChrome: false,
     rememberedClipSetting: null,
     lastKeyboardinput: null,
     defaultKeyboardinputLen: 100,
@@ -64,8 +64,8 @@ var UI = {
     start: function(callback) {
 
         // Setup global variables first
-        UI.isSafari = (navigator.userAgent.indexOf('Safari') !== -1 &&
-                       navigator.userAgent.indexOf('Chrome') === -1);
+        UI.isSafariOrChrome = (navigator.userAgent.indexOf('Safari') !== -1 ||
+                               navigator.userAgent.indexOf('Chrome') !== -1);
 
         UI.initSettings();
 
@@ -129,10 +129,8 @@ var UI = {
     },
 
     initFullscreen: function() {
-        // Only show the button if fullscreen is properly supported
-        // * Safari doesn't support alphanumerical input while in fullscreen
-        /* Do not enable fullscreen button
-        if (!UI.isSafari &&
+        // Only show the button if fullscreen is not natively supported properly
+        if (!UI.isSafariOrChrome &&
             (document.documentElement.requestFullscreen ||
              document.documentElement.mozRequestFullScreen ||
              document.documentElement.webkitRequestFullscreen ||
@@ -141,7 +139,6 @@ var UI = {
                 .classList.remove("noVNC_hidden");
             UI.addFullscreenHandlers();
         }
-        */
     },
 
     initSettings: function() {

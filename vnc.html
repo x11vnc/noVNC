@@ -89,8 +89,16 @@
 
             // For Safari
             return 'Sure?';
-        };
-    </script>    
+        }
+
+        // Disable escape key
+        document.onkeydown = function (evt) {
+            if (evt.keyCode == 27) {
+                evt.preventDefault();
+                // UI.rfb.sendKey(KeyTable.XK_Escape, "Escape");
+            }
+        }
+    </script>
     <!-- end scripts -->
 </head>
 

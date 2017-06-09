@@ -7,7 +7,7 @@ import * as Log from '../core/util/logging.js';
 import l10nGet, { l10n } from '../core/util/localization.js';
 
 import 'sinon';
-import sinonChai from '../node_modules/sinon-chai/lib/sinon-chai.js'
+import sinonChai from '../node_modules/sinon-chai/lib/sinon-chai.js';
 chai.use(sinonChai);
 
 describe('Utils', function() {
@@ -42,7 +42,7 @@ describe('Utils', function() {
             Log.Debug('dbg');
             expect(console.debug).to.have.been.calledWith('dbg');
         });
-        
+
         it('should use console.info for Info', function () {
             Log.init_logging('debug');
             Log.Info('inf');

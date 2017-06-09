@@ -10,7 +10,7 @@
 /*jslint bitwise: false, white: false, browser: true, devel: true */
 /*global Util, window, document */
 
-import { init_logging as main_init_logging } from '../core/util/logging.js'; 
+import { init_logging as main_init_logging } from '../core/util/logging.js';
 
 // init log level reading the logging HTTP param
 export function init_logging (level) {
@@ -206,7 +206,7 @@ export function injectParamIfMissing (path, param, value) {
 // will receive either an event or an error on failure.
 export function fetchJSON(path, resolve, reject) {
     // NB: IE11 doesn't support JSON as a responseType
-    const req = new XMLHttpRequest();
+    var req = new XMLHttpRequest();
     req.open('GET', path);
 
     req.onload = function () {

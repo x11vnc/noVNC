@@ -12,7 +12,7 @@
 /* global window, document.getElementById, Util, WebUtil, RFB, Display */
 
 import * as Log from '../core/util/logging.js';
-import _, { l10n } from '../core/util/localization.js'
+import _, { l10n } from '../core/util/localization.js';
 import { isTouchDevice, browserSupportsCursorURIs as cursorURIsSupported } from '../core/util/browsers.js';
 import { setCapture, getPointerEvent } from '../core/util/events.js';
 import KeyTable from "../core/input/keysym.js";
@@ -21,7 +21,7 @@ import RFB from "../core/rfb.js";
 import Display from "../core/display.js";
 import * as WebUtil from "./webutil.js";
 
-const UI = {
+var UI = {
 
     connected: false,
     desktopName: "",
@@ -98,6 +98,9 @@ const UI = {
         document.getElementById("noVNC_status")
             .addEventListener('click', UI.hideStatus);
 
+        // Bootstrap fallback input handler
+        UI.keyboardinputReset();
+
         UI.openControlbar();
 
         // Show the connect panel on first load unless autoconnecting
@@ -168,7 +171,6 @@ const UI = {
         UI.initSetting('host', window.location.hostname);
         UI.initSetting('port', port);
         UI.initSetting('encrypt', (window.location.protocol === "https:"));
-        UI.initSetting('true_color', true);
         UI.initSetting('cursor', !isTouchDevice);
         UI.initSetting('clip', false);
         UI.initSetting('resize', 'off');
@@ -312,8 +314,6 @@ const UI = {
             .addEventListener('touchend', UI.controlbarHandleMouseUp);
         document.getElementById("noVNC_control_bar_handle")
             .addEventListener('touchmove', UI.dragControlbarHandle);
-
-        window.addEventListener('load', UI.keyboardinputReset);
     },
 
     addExtraKeysHandlers: function() {
@@ -382,7 +382,6 @@ const UI = {
             .addEventListener('click', UI.toggleSettingsPanel);
 
         UI.addSettingChangeHandler('encrypt');
-        UI.addSettingChangeHandler('true_color');
         UI.addSettingChangeHandler('cursor');
         UI.addSettingChangeHandler('cursor', UI.updateLocalCursor);
         UI.addSettingChangeHandler('resize');
@@ -475,7 +474,6 @@ const UI = {
 
         if (UI.connected) {
             UI.disableSetting('encrypt');
-            UI.disableSetting('true_color');
             UI.disableSetting('shared');
             UI.disableSetting('host');
             UI.disableSetting('port');
@@ -488,7 +486,6 @@ const UI = {
             UI.closeControlbarTimeout = setTimeout(UI.closeControlbar, 2000);
         } else {
             UI.enableSetting('encrypt');
-            UI.enableSetting('true_color');
             UI.enableSetting('shared');
             UI.enableSetting('host');
             UI.enableSetting('port');
@@ -630,6 +627,15 @@ const UI = {
         UI.controlbarDrag = true;
     },
 
+    showControlbarHint: function (show) {
+        var hint = document.getElementById('noVNC_control_bar_hint');
+        if (show) {
+            hint.classList.add("noVNC_active");
+        } else {
+            hint.classList.remove("noVNC_active");
+        }
+    },
+
     dragControlbarHandle: function (e) {
         if (!UI.controlbarGrabbed) return;
 
@@ -725,6 +731,7 @@ const UI = {
             UI.activateControlbar();
         }
         UI.controlbarGrabbed = false;
+        UI.showControlbarHint(false);
     },
 
     controlbarHandleMouseDown: function(e) {
@@ -735,9 +742,15 @@ const UI = {
         var handle = document.getElementById("noVNC_control_bar_handle");
         var bounds = handle.getBoundingClientRect();
 
-        setCapture(handle);
+        // Touch events have implicit capture
+        if (e.type === "mousedown") {
+            setCapture(handle);
+        }
+
         UI.controlbarGrabbed = true;
         UI.controlbarDrag = false;
+
+        UI.showControlbarHint(true);
 
         UI.controlbarMouseDownClientY = ptr.clientY;
         UI.controlbarMouseDownOffsetY = ptr.clientY - bounds.top;
@@ -874,7 +887,6 @@ const UI = {
 
         // Refresh UI elements from saved cookies
         UI.updateSetting('encrypt');
-        UI.updateSetting('true_color');
         if (cursorURIsSupported()) {
             UI.updateSetting('cursor');
         } else {
@@ -1050,7 +1062,6 @@ const UI = {
         UI.closeConnectPanel();
 
         UI.rfb.set_encrypt(UI.getSetting('encrypt'));
-        UI.rfb.set_true_color(UI.getSetting('true_color'));
         UI.rfb.set_shared(UI.getSetting('shared'));
         UI.rfb.set_repeaterID(UI.getSetting('repeaterID'));
 
@@ -1134,7 +1145,10 @@ const UI = {
     },
 
     setPassword: function(e) {
-        var password = document.getElementById('noVNC_password_input').value;
+        var inputElem = document.getElementById('noVNC_password_input');
+        var password = inputElem.value;
+        // Clear the input after reading the password
+        inputElem.value = "";
         UI.rfb.sendPassword(password);
         UI.reconnect_password = password;
         document.getElementById('noVNC_password_dlg')
@@ -1516,10 +1530,10 @@ const UI = {
 
         // Send the key events
         for (i = 0; i < backspaces; i++) {
-            UI.rfb.sendKey(KeyTable.XK_BackSpace);
+            UI.rfb.sendKey(KeyTable.XK_BackSpace, "Backspace");
         }
         for (i = newLen - inputs; i < newLen; i++) {
-            UI.rfb.sendKey(keysyms.fromUnicode(newValue.charCodeAt(i)).keysym);
+            UI.rfb.sendKey(keysyms.lookup(newValue.charCodeAt(i)));
         }
 
         // Control the text content length in the keyboardinput element
@@ -1573,7 +1587,7 @@ const UI = {
     },
 
     sendEsc: function() {
-        UI.rfb.sendKey(KeyTable.XK_Escape);
+        UI.rfb.sendKey(KeyTable.XK_Escape, "Escape");
     },
 
     sendTab: function() {
@@ -1583,10 +1597,10 @@ const UI = {
     toggleCtrl: function() {
         var btn = document.getElementById('noVNC_toggle_ctrl_button');
         if (btn.classList.contains("noVNC_selected")) {
-            UI.rfb.sendKey(KeyTable.XK_Control_L, false);
+            UI.rfb.sendKey(KeyTable.XK_Control_L, "ControlLeft", false);
             btn.classList.remove("noVNC_selected");
         } else {
-            UI.rfb.sendKey(KeyTable.XK_Control_L, true);
+            UI.rfb.sendKey(KeyTable.XK_Control_L, "ControlLeft", true);
             btn.classList.add("noVNC_selected");
         }
     },
@@ -1594,10 +1608,10 @@ const UI = {
     toggleAlt: function() {
         var btn = document.getElementById('noVNC_toggle_alt_button');
         if (btn.classList.contains("noVNC_selected")) {
-            UI.rfb.sendKey(KeyTable.XK_Alt_L, false);
+            UI.rfb.sendKey(KeyTable.XK_Alt_L, "AltLeft", false);
             btn.classList.remove("noVNC_selected");
         } else {
-            UI.rfb.sendKey(KeyTable.XK_Alt_L, true);
+            UI.rfb.sendKey(KeyTable.XK_Alt_L, "AltLeft", true);
             btn.classList.add("noVNC_selected");
         }
     },
@@ -1683,7 +1697,16 @@ const UI = {
 
     bell: function(rfb) {
         if (WebUtil.getConfigVar('bell', 'on') === 'on') {
-            document.getElementById('noVNC_bell').play();
+            document.getElementById('noVNC_bell').play()
+                .catch(function(e) {
+                    if (e.name === "NotAllowedError") {
+                        // Ignore when the browser doesn't let us play audio.
+                        // It is common that the browsers require audio to be
+                        // initiated from a user action.
+                    } else {
+                        Log.Error("Unable to play bell: " + e);
+                    }
+                });
         }
     },
 

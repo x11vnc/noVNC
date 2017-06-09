@@ -9,7 +9,7 @@ var loader;
 // <script type="module"> support
 var anonSources = {};
 if (typeof document != 'undefined' && document.getElementsByTagName) {
-  function handleError(err) {
+  var handleError = function(err) {
     // dispatch an error event so that we can display in errors in browsers
     // that don't yet support unhandledrejection
     if (window.onunhandledrejection === undefined) {
@@ -37,7 +37,7 @@ if (typeof document != 'undefined' && document.getElementsByTagName) {
     throw err;
   }
 
-  function ready() {
+  var ready = function() {
     document.removeEventListener('DOMContentLoaded', ready, false );
 
     var anonCnt = 0;
@@ -103,10 +103,10 @@ BrowserESModuleLoader.prototype[RegisterLoader.resolve] = function(key, parent) 
 
 function xhrFetch(url, resolve, reject) {
   var xhr = new XMLHttpRequest();
-  function load(source) {
+  var load = function(source) {
     resolve(xhr.responseText);
   }
-  function error() {
+  var error = function() {
     reject(new Error('XHR error' + (xhr.status ? ' (' + xhr.status + (xhr.statusText ? ' ' + xhr.statusText  : '') + ')' : '') + ' loading ' + url));
   }
 
@@ -137,14 +137,15 @@ function xhrFetch(url, resolve, reject) {
 }
 
 var WorkerPool = function (script, size) {
+  script = document.currentScript.src.substr(0, document.currentScript.src.lastIndexOf("/")) + "/" + script;
   this._workers = new Array(size);
   this._ind = 0;
   this._size = size;
   this._jobs = 0;
   this.onmessage = undefined;
   this._stopTimeout = undefined;
-  for (let i = 0; i < size; i++) {
-    let wrkr = new Worker(script);
+  for (var i = 0; i < size; i++) {
+    var wrkr = new Worker(script);
     wrkr._count = 0;
     wrkr._ind = i;
     wrkr.onmessage = this._onmessage.bind(this, wrkr);
@@ -160,7 +161,7 @@ WorkerPool.prototype = {
       clearTimeout(this._stopTimeout);
       this._stopTimeout = undefined;
     }
-    let wrkr = this._workers[this._ind % this._size];
+    var wrkr = this._workers[this._ind % this._size];
     wrkr._count++;
     this._jobs++;
     wrkr.postMessage(msg);
@@ -204,7 +205,7 @@ WorkerPool.prototype = {
 };
 
 var promiseMap = new Map();
-var babelWorker = new WorkerPool('vendor/browser-es-module-loader/dist/babel-worker.js', 3);
+var babelWorker = new WorkerPool('babel-worker.js', 3);
 babelWorker.onmessage = function (evt) {
     var promFuncs = promiseMap.get(evt.data.key);
     promFuncs.resolve(evt.data);
@@ -230,12 +231,12 @@ BrowserESModuleLoader.prototype[RegisterLoader.instantiate] = function(key, proc
   })
   .then(function(source) {
     // check our cache first
-    const cacheEntryTrans = localStorage.getItem(key+'!transpiled');
-    if (cacheEntryTrans) {
-      const cacheEntryRaw = localStorage.getItem(key+'!raw');
+    var cacheEntry = localStorage.getItem(key);
+    if (cacheEntry) {
+      cacheEntry = JSON.parse(cacheEntry);
       // TODO: store a hash instead
-      if (cacheEntryRaw === source) {
-        return Promise.resolve({key: key, code: cacheEntryTrans, source: source});
+      if (cacheEntry.source === source) {
+        return Promise.resolve({key: key, code: cacheEntry.code, source: cacheEntry.source});
       }
     }
     return new Promise(function (resolve, reject) {
@@ -245,9 +246,13 @@ BrowserESModuleLoader.prototype[RegisterLoader.instantiate] = function(key, proc
   }).then(function (data) {
     // evaluate without require, exports and module variables
     // we leave module in for now to allow module.require access
-    if (data.key.slice(-8) !== '#nocache') {
-        localStorage.setItem(key+'!raw', data.source);
-        localStorage.setItem(data.key+'!transpiled', data.code);
+    try {
+      var cacheEntry = JSON.stringify({source: data.source, code: data.code});
+      localStorage.setItem(key, cacheEntry);
+    } catch (e) {
+      if (window.console) {
+        window.console.warn('Unable to cache transpiled version of ' + key + ': ' + e);
+      }
     }
     (0, eval)(data.code + '\n//# sourceURL=' + data.key + '!transpiled');
     processAnonRegister();

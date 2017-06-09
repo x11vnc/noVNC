@@ -9,7 +9,7 @@
     // Fallback for all uncought errors
     function handleError (event, err) {
         try {
-            const msg = document.getElementById('noVNC_fallback_errormsg');
+            var msg = document.getElementById('noVNC_fallback_errormsg');
 
             // Only show the initial error
             if (msg.hasChildNodes()) {
@@ -35,8 +35,7 @@
                 msg.appendChild(div);
             }
 
-            if (err &&
-                (err.stack !== undefined)) {
+            if (err && (err.stack !== undefined)) {
                 div = document.createElement("div");
                 div.className = 'noVNC_stack';
                 div.appendChild(document.createTextNode(err.stack));

@@ -131,6 +131,7 @@ var UI = {
     initFullscreen: function() {
         // Only show the button if fullscreen is properly supported
         // * Safari doesn't support alphanumerical input while in fullscreen
+        /* Do not enable fullscreen button
         if (!UI.isSafari &&
             (document.documentElement.requestFullscreen ||
              document.documentElement.mozRequestFullScreen ||
@@ -140,6 +141,7 @@ var UI = {
                 .classList.remove("noVNC_hidden");
             UI.addFullscreenHandlers();
         }
+        */
     },
 
     initSettings: function() {
@@ -524,12 +526,6 @@ var UI = {
             document.getElementById('noVNC_toggle_extra_keys_button')
                 .classList.remove('noVNC_hidden');
         }
-
-        // XJ Hide VNC button
-        if (true) {
-            UI.updateXvpButton(0);
-        }
-        // XJ Done
 
         // State change disables viewport dragging.
         // It is enabled (toggled) by direct click on the button

@@ -440,16 +440,16 @@ var UI = {
                       return 'Sure?';
                 };
                 // Disable escape key
-                document.onkeydown = function (e) {
+                document.getElementById('noVNC_screen').onkeydown = function (e) {
                     var code = e.keyCode || e.charCode;
                     if (code == 27) {
                         e.preventDefault();
-                        // UI.rfb.sendKey(KeyTable.XK_Escape, "Escape");
+                        UI.rfb.sendKey(KeyTable.XK_Escape, "Escape");
                         return false;
                     }
                     return true;
                 };
-                // Done XJ
+                // XJ Done
 
                 document.getElementById("noVNC_transition_text").textContent = _("Connecting...");
                 document.documentElement.classList.add("noVNC_connecting");
@@ -471,10 +471,10 @@ var UI = {
                 document.documentElement.classList.add("noVNC_disconnecting");
                 break;
             case 'disconnected':
-                // XJ: Disable verification of closing window and re-enable escape key
+                // XJ: Disable verification of closing window
                 window.onbeforeunload = function (e) {};
                 document.onkeydown = function (e) { return true; };
-                // Done XJ
+                // XJ Done
 
                 UI.showStatus(_("Disconnected"));
                 break;
@@ -535,6 +535,11 @@ var UI = {
             document.getElementById('noVNC_toggle_extra_keys_button')
                 .classList.remove('noVNC_hidden');
         }
+
+        // XJ: Hide Power button for x11vnc in Docker image
+        document.getElementById('noVNC_xvp_button')
+            .classList.add("noVNC_hidden");
+        // XJ Done
 
         // State change disables viewport dragging.
         // It is enabled (toggled) by direct click on the button

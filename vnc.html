@@ -80,14 +80,12 @@
     <!-- actual script modules -->
     <script type="module" src="app/ui.js">
         window.onbeforeunload = function (e) {
-            if (UI.connected) {
               e = e || window.event;
 
               // For IE and Firefox prior to version 4
               if (e) {
                   e.returnValue = 'Sure?';
               }
-            }
         };
 
         // Disable escape key

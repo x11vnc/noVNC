@@ -444,7 +444,7 @@ var UI = {
                     var code = e.keyCode || e.charCode;
                     if (code == 27) {
                         e.preventDefault();
-                        UI.rfb.sendKey(KeyTable.XK_Escape, "Escape");
+                        // UI.rfb.sendKey(KeyTable.XK_Escape, "Escape");
                         return false;
                     }
                     return true;

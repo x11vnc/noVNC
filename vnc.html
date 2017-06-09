@@ -68,6 +68,7 @@
     <!-- ES2015/ES6 modules polyfill -->
     <script type="module">
         window._noVNC_has_module_support = true;
+        window._noVNC_connected = false;
     </script>
     <script>
         window.addEventListener("load", function() {
@@ -78,27 +79,7 @@
         });
     </script>
     <!-- actual script modules -->
-    <script type="module" src="app/ui.js">
-        window.onbeforeunload = function (e) {
-              e = e || window.event;
-
-              // For IE and Firefox prior to version 4
-              if (e) {
-                  e.returnValue = 'Sure?';
-              }
-        };
-
-        // Disable escape key
-        document.onkeydown = function (e) {
-            var code = e.charCode || e.keyCode;
-            if (code == 27) {
-                e.preventDefault();
-                // UI.sendEsc();
-                return false;
-            }
-            return true;
-        };
-    </script>
+    <script type="module" src="app/ui.js"></script>
     <!-- end scripts -->
 </head>
 

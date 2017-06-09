@@ -428,6 +428,29 @@ var UI = {
 
         switch (state) {
             case 'connecting':
+                // XJ: Verification of closing window and disable escape key
+                window.onbeforeunload = function (e) {
+                    e = e || window.event;
+                    // For IE and Firefox prior to version 4
+                    if (e) {
+                        e.returnValue = 'Sure?';
+                      }
+
+                      // For Safari
+                      return 'Sure?';
+                };
+                // Disable escape key
+                document.onkeydown = function (e) {
+                    var code = e.keyCode || e.charCode;
+                    if (code == 27) {
+                        e.preventDefault();
+                        UI.rfb.sendKey(KeyTable.XK_Escape, "Escape");
+                        return false;
+                    }
+                    return true;
+                };
+                // Done XJ
+
                 document.getElementById("noVNC_transition_text").textContent = _("Connecting...");
                 document.documentElement.classList.add("noVNC_connecting");
                 break;
@@ -448,6 +471,11 @@ var UI = {
                 document.documentElement.classList.add("noVNC_disconnecting");
                 break;
             case 'disconnected':
+                // XJ: Disable verification of closing window and re-enable escape key
+                window.onbeforeunload = function (e) {};
+                document.onkeydown = function (e) { return true; };
+                // Done XJ
+
                 UI.showStatus(_("Disconnected"));
                 break;
             default:

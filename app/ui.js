@@ -37,7 +37,7 @@ var UI = {
     controlbarMouseDownClientY: 0,
     controlbarMouseDownOffsetY: 0,
 
-    isSafari: false,
+    isSafariOrChrome: false,
     rememberedClipSetting: null,
     lastKeyboardinput: null,
     defaultKeyboardinputLen: 100,
@@ -64,8 +64,8 @@ var UI = {
     start: function(callback) {
 
         // Setup global variables first
-        UI.isSafari = (navigator.userAgent.indexOf('Safari') !== -1 &&
-                       navigator.userAgent.indexOf('Chrome') === -1);
+        UI.isSafariOrChrome = (navigator.userAgent.indexOf('Safari') !== -1 ||
+                               navigator.userAgent.indexOf('Chrome') !== -1);
 
         UI.initSettings();
 
@@ -129,9 +129,8 @@ var UI = {
     },
 
     initFullscreen: function() {
-        // Only show the button if fullscreen is properly supported
-        // * Safari doesn't support alphanumerical input while in fullscreen
-        if (!UI.isSafari &&
+        // Only show the button if fullscreen is not natively supported properly
+        if (!UI.isSafariOrChrome &&
             (document.documentElement.requestFullscreen ||
              document.documentElement.mozRequestFullScreen ||
              document.documentElement.webkitRequestFullscreen ||
@@ -428,6 +427,19 @@ var UI = {
 
         switch (state) {
             case 'connecting':
+                // XJ: Verification of closing window
+                window.onbeforeunload = function (e) {
+                    e = e || window.event;
+                    // For IE and Firefox prior to version 4
+                    if (e) {
+                        e.returnValue = 'Sure?';
+                      }
+
+                      // For Safari
+                      return 'Sure?';
+                };
+                // XJ Done
+
                 document.getElementById("noVNC_transition_text").textContent = _("Connecting...");
                 document.documentElement.classList.add("noVNC_connecting");
                 break;
@@ -448,6 +460,10 @@ var UI = {
                 document.documentElement.classList.add("noVNC_disconnecting");
                 break;
             case 'disconnected':
+                // XJ: Disable verification of closing window
+                window.onbeforeunload = function (e) {};
+                // XJ Done
+
                 UI.showStatus(_("Disconnected"));
                 break;
             default:
@@ -960,8 +976,10 @@ var UI = {
     // Disable/enable XVP button
     updateXvpButton: function(ver) {
         if (ver >= 1 && !UI.rfb.get_view_only()) {
+            /* Disable enabling noVNC_hidden
             document.getElementById('noVNC_xvp_button')
                 .classList.remove("noVNC_hidden");
+            */
         } else {
             document.getElementById('noVNC_xvp_button')
                 .classList.add("noVNC_hidden");

@@ -68,6 +68,7 @@
     <!-- ES2015/ES6 modules polyfill -->
     <script type="module">
         window._noVNC_has_module_support = true;
+        window._noVNC_connected = false;
     </script>
     <script>
         window.addEventListener("load", function() {
@@ -79,18 +80,6 @@
     </script>
     <!-- actual script modules -->
     <script type="module" src="app/ui.js"></script>
-    <script>window.onbeforeunload = function (e) {
-            e = e || window.event;
-
-            // For IE and Firefox prior to version 4
-            if (e) {
-                e.returnValue = 'Sure?';
-            }
-
-            // For Safari
-            return 'Sure?';
-        };
-    </script>    
     <!-- end scripts -->
 </head>
 
@@ -166,7 +155,7 @@
 
             <!-- XVP Shutdown/Reboot -->
             <input type="image" alt="Shutdown/Reboot" src="app/images/power.svg"
-                id="noVNC_xvp_button" class="noVNC_button"
+                id="noVNC_xvp_button" class="noVNC_button noVNC_hidden"
                 title="Shutdown/Reboot..." />
             <div class="noVNC_vcenter">
             <div id="noVNC_xvp" class="noVNC_panel">
@@ -225,7 +214,7 @@
                         <select id="noVNC_setting_resize" name="vncResize">
                             <option value="off">None</option>
                             <option value="scale">Local Scaling</option>
-                            <option value="downscale">Local Downscaling</option>
+                            <option value="downscale" selected="selected">Local Downscaling</option>
                             <option value="remote">Remote Resizing</option>
                         </select>
                     </li>
@@ -354,5 +343,6 @@
         <source src="app/sounds/bell.oga" type="audio/ogg">
         <source src="app/sounds/bell.mp3" type="audio/mpeg">
     </audio>
+
  </body>
 </html>

@@ -1610,12 +1610,12 @@ var UI = {
         UI.rfb.sendKey(KeyTable.XK_Escape, "Escape");
     },
 
-    sendF11: function() {
-        UI.rfb.sendKey(KeyTable.XK_F11, "F11");
-    },
-
     sendTab: function() {
         UI.rfb.sendKey(KeyTable.XK_Tab);
+    },
+
+    sendF11: function() {
+        UI.rfb.sendKey(KeyTable.XK_F11);
     },
 
     toggleCtrl: function() {

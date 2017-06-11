@@ -326,6 +326,8 @@ var UI = {
             .addEventListener('click', UI.sendTab);
         document.getElementById("noVNC_send_esc_button")
             .addEventListener('click', UI.sendEsc);
+        document.getElementById("noVNC_send_f11_button")
+            .addEventListener('click', UI.sendF11);
         document.getElementById("noVNC_send_ctrl_alt_del_button")
             .addEventListener('click', UI.sendCtrlAltDel);
     },
@@ -1606,6 +1608,10 @@ var UI = {
 
     sendEsc: function() {
         UI.rfb.sendKey(KeyTable.XK_Escape, "Escape");
+    },
+
+    sendF11: function() {
+        UI.rfb.sendKey(KeyTable.XK_F11, "F11");
     },
 
     sendTab: function() {

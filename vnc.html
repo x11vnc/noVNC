@@ -79,7 +79,7 @@
         });
     </script>
     <!-- actual script modules -->
-    <script type="module" src="app/ui.js"></script>
+    <script type="module" src="app/ui.js?version=17.06.11"></script>
     <!-- end scripts -->
 </head>
 
@@ -146,6 +146,9 @@
                     <input type="image" alt="Esc" src="app/images/esc.svg"
                         id="noVNC_send_esc_button" class="noVNC_button"
                         title="Send Escape"/>
+                    <input type="image" alt="F11" src="app/images/f11.svg"
+                        id="noVNC_send_f11_button" class="noVNC_button"
+                        title="Send F11"/>
                     <input type="image" alt="Ctrl+Alt+Del" src="app/images/ctrlaltdel.svg"
                         id="noVNC_send_ctrl_alt_del_button" class="noVNC_button"
                         title="Send Ctrl-Alt-Del" />
@@ -214,7 +217,7 @@
                         <select id="noVNC_setting_resize" name="vncResize">
                             <option value="off">None</option>
                             <option value="scale">Local Scaling</option>
-                            <option value="downscale" selected="selected">Local Downscaling</option>
+                            <option value="downscale">Local Downscaling</option>
                             <option value="remote">Remote Resizing</option>
                         </select>
                     </li>

@@ -172,7 +172,12 @@ var UI = {
         UI.initSetting('encrypt', (window.location.protocol === "https:"));
         UI.initSetting('cursor', !isTouchDevice);
         UI.initSetting('clip', false);
-        UI.initSetting('resize', 'downscale');
+        var resizeMode = UI.getSetting('resize');
+        if (resizeMode === null) {
+            UI.initSetting('resize', 'off');
+        } else {
+            UI.initSetting('resize', resizeMode);
+        }
         UI.initSetting('shared', true);
         UI.initSetting('view_only', false);
         UI.initSetting('path', 'websockify');

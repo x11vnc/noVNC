@@ -434,11 +434,11 @@ var UI = {
                     e = e || window.event;
                     // For IE and Firefox prior to version 4
                     if (e) {
-                        e.returnValue = 'Sure?';
-                      }
+                        e.returnValue = 'Are you sure you want to close the window? The Docker desktop will remain running in the background.';
+                    }
 
-                      // For Safari
-                      return 'Sure?';
+                    // For Safari
+                    return 'Are you sure you want to close the window? The Docker desktop will remain running in the background.';
                 };
                 // XJ Done
 

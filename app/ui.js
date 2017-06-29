@@ -430,15 +430,8 @@ var UI = {
         switch (state) {
             case 'connecting':
                 // XJ: Verification of closing window
-                window.onbeforeunload = function (e) {
-                    e = e || window.event;
-                    // For IE and Firefox prior to version 4
-                    if (e) {
-                        e.returnValue = 'Are you sure you want to close the window? The Docker desktop will remain running in the background.';
-                    }
-
-                    // For Safari
-                    return 'Are you sure you want to close the window? The Docker desktop will remain running in the background.';
+                window.onbeforeunload = function () {
+                    return 'Are you sure you want to close the window? The Docker container will continue in the background.';
                 };
                 // XJ Done
 

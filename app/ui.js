@@ -435,6 +435,10 @@ var UI = {
                 window.onbeforeunload = function (e) {
                     e = e || window.event;
 
+                    UI.showStatus('Docker desktop will continue running in the background ' +
+                    'after you close the browser window. If you want to stop the Docker desktop, ' +
+                    'log out from the Docker desktop before closing the window.', 'info', 5000)
+
                     // For IE and Firefox prior to version 4
                     if (e) {
                         e.returnValue = 'Are you sure you want to close the window?';

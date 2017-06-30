@@ -137,7 +137,7 @@ var UI = {
         }
 
         // XJ: Verification of closing window
-        window.addEventListener("beforeunload", unloadEvent);
+        window.addEventListener("beforeunload", UI.unloadEvent);
         // XJ Done
     },
 

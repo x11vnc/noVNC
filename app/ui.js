@@ -435,10 +435,6 @@ var UI = {
             case 'connecting':
                 // XMJ: Verification of closing window
                 window.onbeforeunload = function (e) {
-                    UI.showStatus('The Docker desktop will continue running in the background ' +
-                    'after you close the browser window.\n To stop this desktop, use the Logout ' +
-                    'button in the LXDE menu at the lower-left corner.', 'info', 5000)
-
                     e = e || window.event;
 
                     // For IE and Firefox prior to version 4
@@ -464,6 +460,8 @@ var UI = {
                     msg = _("Connected (unencrypted) to ") + UI.desktopName;
                 }
                 UI.showStatus(msg);
+                UI.showStatus('To stop this desktop, use the Logout ' +
+                'button in the LXDE menu at the lower-left corner.', 'info', 5000)
                 break;
             case 'disconnecting':
                 UI.connected = false;
@@ -1021,7 +1019,6 @@ var UI = {
             .classList.add("noVNC_selected");
 
         // XMJ: Focus on the textarea and select the text
-        document.getElementById('noVNC_clipboard_text').focus();
         document.getElementById('noVNC_clipboard_text').select();
         // XMJ: Done
     },
@@ -1049,7 +1046,6 @@ var UI = {
     },
 
     clipboardCopy: function() {
-        document.getElementById('noVNC_clipboard_text').focus();
         document.getElementById('noVNC_clipboard_text').select();
         document.execCommand("copy");
     },

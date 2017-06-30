@@ -431,7 +431,7 @@ var UI = {
 
         switch (state) {
             case 'connecting':
-                // XJ: Verification of closing window
+                // XMJ: Verification of closing window
                 window.onbeforeunload = function (e) {
                     e = e || window.event;
 
@@ -443,7 +443,7 @@ var UI = {
                     // For Safari
                     return 'Are you sure you want to close the window?';
                 };
-                // XJ Done
+                // XMJ Done
 
                 document.getElementById("noVNC_transition_text").textContent = _("Connecting...");
                 document.documentElement.classList.add("noVNC_connecting");
@@ -465,9 +465,9 @@ var UI = {
                 document.documentElement.classList.add("noVNC_disconnecting");
                 break;
             case 'disconnected':
-                // XJ: Disable verification of closing window
+                // XMJ: Disable verification of closing window
                 window.onbeforeunload = function (e) {};
-                // XJ Done
+                // XMJ Done
 
                 UI.showStatus(_("Disconnected"));
                 break;
@@ -613,6 +613,9 @@ var UI = {
     openControlbar: function() {
         document.getElementById('noVNC_control_bar')
             .classList.add("noVNC_open");
+        // Begin XMJ. Open Clipboard by default
+        openClipboardPanel();
+        // Done XMJ
     },
 
     closeControlbar: function() {
@@ -1008,6 +1011,10 @@ var UI = {
             .classList.add("noVNC_open");
         document.getElementById('noVNC_clipboard_button')
             .classList.add("noVNC_selected");
+
+        // XMJ: Focus on the textarea and select the text
+        document.getElementById('noVNC_clipboard_text').select()
+        // XMJ: Done
     },
 
     closeClipboardPanel: function() {
@@ -1622,7 +1629,7 @@ var UI = {
         UI.rfb.sendKey(KeyTable.XK_F11);
     },
 
-    // Begin XJ
+    // Begin XMJ
     toggleShift: function() {
         var btn = document.getElementById('noVNC_toggle_shift_button');
         if (btn.classList.contains("noVNC_selected")) {
@@ -1633,7 +1640,7 @@ var UI = {
             btn.classList.add("noVNC_selected");
         }
     },
-    // End XJ
+    // End XMJ
 
     toggleCtrl: function() {
         var btn = document.getElementById('noVNC_toggle_ctrl_button');

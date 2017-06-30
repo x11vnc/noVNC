@@ -1021,8 +1021,8 @@ var UI = {
             .classList.add("noVNC_selected");
 
         // XMJ: Focus on the textarea and select the text
-        document.getElementByIdDcnoVNC_clipboard_text').focus()
-        document.getElementById('noVNC_clipboard_text').select()
+        document.getElementById('noVNC_clipboard_text').focus();
+        document.getElementById('noVNC_clipboard_text').select();
         // XMJ: Done
     },
 

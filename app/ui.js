@@ -460,8 +460,8 @@ var UI = {
                     msg = _("Connected (unencrypted) to ") + UI.desktopName;
                 }
                 UI.showStatus(msg);
-                UI.showStatus('To stop this desktop, use the Logout ' +
-                'button in the menu at the lower-left corner.', 'info', 3000)
+                UI.showStatus('To exit the desktop, use the Logout ' +
+                'button in the LXDE menu.', 'info', 3000)
                 break;
             case 'disconnecting':
                 UI.connected = false;

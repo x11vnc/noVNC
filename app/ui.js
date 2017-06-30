@@ -60,15 +60,6 @@ var UI = {
         WebUtil.initSettings(UI.start, callback);
     },
 
-    // XJ: Verification of closing window
-    unloadDialog: function(e) {
-      var confirmationMessage = "Are you sure you want to close the window? The Docker container will continue in the background.";
-
-      (e || window.event).returnValue = confirmationMessage; //Gecko + IE
-      return confirmationMessage; //Webkit, Safari, Chrome etc.
-    },
-    // XJ Done
-
     // Render default UI and initialize settings menu
     start: function(callback) {
 
@@ -135,10 +126,6 @@ var UI = {
         if (typeof callback === "function") {
             callback(UI.rfb);
         }
-
-        // XJ: Verification of closing window
-        window.addEventListener("beforeunload", UI.unloadDialog);
-        // XJ Done
     },
 
     initFullscreen: function() {
@@ -331,6 +318,8 @@ var UI = {
     addExtraKeysHandlers: function() {
         document.getElementById("noVNC_toggle_extra_keys_button")
             .addEventListener('click', UI.toggleExtraKeys);
+        document.getElementById("noVNC_toggle_shift_button")
+            .addEventListener('click', UI.toggleShift);
         document.getElementById("noVNC_toggle_ctrl_button")
             .addEventListener('click', UI.toggleCtrl);
         document.getElementById("noVNC_toggle_alt_button")
@@ -442,6 +431,20 @@ var UI = {
 
         switch (state) {
             case 'connecting':
+                // XJ: Verification of closing window
+                window.onbeforeunload = function (e) {
+                    e = e || window.event;
+
+                    // For IE and Firefox prior to version 4
+                    if (e) {
+                        e.returnValue = 'Are you sure you want to close the window?';
+                    }
+
+                    // For Safari
+                    return 'Are you sure you want to close the window?';
+                };
+                // XJ Done
+
                 document.getElementById("noVNC_transition_text").textContent = _("Connecting...");
                 document.documentElement.classList.add("noVNC_connecting");
                 break;

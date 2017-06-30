@@ -366,6 +366,8 @@ var UI = {
             .addEventListener('blur', UI.displayFocus);
         document.getElementById("noVNC_clipboard_text")
             .addEventListener('change', UI.clipboardSend);
+        document.getElementById("noVNC_clipboard_copy_button")
+            .addEventListener('click', UI.clipboardCopy);
         document.getElementById("noVNC_clipboard_clear_button")
             .addEventListener('click', UI.clipboardClear);
     },
@@ -1019,6 +1021,7 @@ var UI = {
             .classList.add("noVNC_selected");
 
         // XMJ: Focus on the textarea and select the text
+        document.getElementById('noVNC_clipboard_text').focus()
         document.getElementById('noVNC_clipboard_text').select()
         // XMJ: Done
     },
@@ -1043,6 +1046,11 @@ var UI = {
         Log.Debug(">> UI.clipboardReceive: " + text.substr(0,40) + "...");
         document.getElementById('noVNC_clipboard_text').value = text;
         Log.Debug("<< UI.clipboardReceive");
+    },
+
+    clipboardCopy: function() {
+        document.getElementById('noVNC_clipboard_text').focus();
+        document.execCommand("copy");
     },
 
     clipboardClear: function() {

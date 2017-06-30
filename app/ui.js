@@ -288,9 +288,10 @@ var UI = {
         document.getElementById("noVNC_keyboardinput")
             .addEventListener('blur', UI.onblurVirtualKeyboard);
         document.getElementById("noVNC_keyboardinput")
-            .addEventListener('paste', UI.pasteToClipboard);
-        document.getElementById("noVNC_keyboardinput")
             .addEventListener('submit', function () { return false; });
+
+        document.addEventListener('paste', UI.pasteToClipboard);
+        document.addEventListener('copy', UI.copyFromClipboard);
 
         document.documentElement
             .addEventListener('mousedown', UI.keepVirtualKeyboard, true);
@@ -1599,7 +1600,7 @@ var UI = {
         }
     },
 
-    // When pasting into the input area, write into clipboard
+    // When pasting into the input area, write into clipboard from host
     pasteToClipboard: function(e) {
         if (!UI.rfb) return;
 
@@ -1610,8 +1611,23 @@ var UI = {
             pastedText = e.clipboardData.getData('text/plain');
         }
 
+        UI.closeControlbarTimeout = setTimeout(UI.closeControlbar, 2000);
+        UI.openClipboardPanel();
         UI.clipboardReceive(UI.rfb, pastedText);
         UI.clipboardSend();
+
+        return false; // Prevent the default handler from running.
+    },
+
+    // When copying into the input area, copy from clipboard to host
+    copyFromClipboard: function(e) {
+        if (!UI.rfb) return;
+
+        UI.closeControlbarTimeout = setTimeout(UI.closeControlbar, 2000);
+        UI.openClipboardPanel();
+
+        document.getElementById('noVNC_clipboard_text').select();
+        document.execCommand("copy");
 
         return false; // Prevent the default handler from running.
     },

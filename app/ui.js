@@ -61,7 +61,7 @@ var UI = {
     },
 
     // XJ: Verification of closing window
-    unloadEvent: function(e) {
+    unloadDialog: function(e) {
       var confirmationMessage = "Are you sure you want to close the window? The Docker container will continue in the background.";
 
       (e || window.event).returnValue = confirmationMessage; //Gecko + IE
@@ -137,7 +137,7 @@ var UI = {
         }
 
         // XJ: Verification of closing window
-        window.addEventListener("beforeunload", UI.unloadEvent);
+        window.addEventListener("beforeunload", UI.unloadDialog);
         // XJ Done
     },
 
@@ -1618,6 +1618,19 @@ var UI = {
     sendF11: function() {
         UI.rfb.sendKey(KeyTable.XK_F11);
     },
+
+    // Begin XJ
+    toggleShift: function() {
+        var btn = document.getElementById('noVNC_toggle_shift_button');
+        if (btn.classList.contains("noVNC_selected")) {
+            UI.rfb.sendKey(KeyTable.XK_Shift_L, "ShiftLeft", false);
+            btn.classList.remove("noVNC_selected");
+        } else {
+            UI.rfb.sendKey(KeyTable.XK_Shift_L, "ShiftLeft", true);
+            btn.classList.add("noVNC_selected");
+        }
+    },
+    // End XJ
 
     toggleCtrl: function() {
         var btn = document.getElementById('noVNC_toggle_ctrl_button');

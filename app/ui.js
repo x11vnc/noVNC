@@ -288,6 +288,8 @@ var UI = {
         document.getElementById("noVNC_keyboardinput")
             .addEventListener('blur', UI.onblurVirtualKeyboard);
         document.getElementById("noVNC_keyboardinput")
+            .addEventListener('paste', UI.pasteToClipboard);
+        document.getElementById("noVNC_keyboardinput")
             .addEventListener('submit', function () { return false; });
 
         document.documentElement
@@ -1595,6 +1597,23 @@ var UI = {
         } else {
             UI.lastKeyboardinput = newValue;
         }
+    },
+
+    // When pasting into the input area, write into clipboard
+    pasteToClipboard: function(e) {
+        if (!UI.rfb) return;
+
+        var pastedText = undefined;
+        if (window.clipboardData && window.clipboardData.getData) { // IE
+            pastedText = window.clipboardData.getData('Text');
+        } else if (e.clipboardData && e.clipboardData.getData) {
+            pastedText = e.clipboardData.getData('text/plain');
+        }
+
+        UI.clipboardReceive(UI.rfb, pastedText);
+        UI.clipboardSend();
+
+        return false; // Prevent the default handler from running.
     },
 
 /* ------^-------

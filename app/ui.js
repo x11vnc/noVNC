@@ -435,9 +435,9 @@ var UI = {
             case 'connecting':
                 // XMJ: Verification of closing window
                 window.onbeforeunload = function (e) {
-                    UI.showStatus('Docker desktop will continue running in the background ' +
-                    'after you close the browser window. If you want to stop the Docker desktop, ' +
-                    'log out from the Docker desktop before closing the window.', 'info', 5000)
+                    UI.showStatus('The Docker desktop will continue running in the background ' +
+                    'after you close the browser window.\n To stop this desktop, use the Logout ' +
+                    'button in the LXDE menu at the lower-left corner.', 'info', 5000)
 
                     e = e || window.event;
 

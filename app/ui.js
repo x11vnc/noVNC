@@ -461,7 +461,7 @@ var UI = {
                 }
                 UI.showStatus(msg);
                 UI.showStatus('To exit the desktop, use the Logout ' +
-                'button in the LXDE menu.', 'info', 3000)
+                'button in the menu at the lower-left corner.', 'info', 3000)
                 break;
             case 'disconnecting':
                 UI.connected = false;
@@ -617,9 +617,10 @@ var UI = {
     openControlbar: function() {
         document.getElementById('noVNC_control_bar')
             .classList.add("noVNC_open");
-        // Begin XMJ. Open Clipboard by default
-        UI.openClipboardPanel(true);
-        // Done XMJ
+        // Open Clipboard if connected
+        if (UI.connected) {
+            UI.openClipboardPanel(true);
+        }
     },
 
     closeControlbar: function() {

@@ -435,11 +435,11 @@ var UI = {
             case 'connecting':
                 // XMJ: Verification of closing window
                 window.onbeforeunload = function (e) {
-                    e = e || window.event;
-
                     UI.showStatus('Docker desktop will continue running in the background ' +
                     'after you close the browser window. If you want to stop the Docker desktop, ' +
                     'log out from the Docker desktop before closing the window.', 'info', 5000)
+
+                    e = e || window.event;
 
                     // For IE and Firefox prior to version 4
                     if (e) {
@@ -1021,7 +1021,7 @@ var UI = {
             .classList.add("noVNC_selected");
 
         // XMJ: Focus on the textarea and select the text
-        document.getElementById('noVNC_clipboard_text').focus()
+        document.getElementByIdDcnoVNC_clipboard_text').focus()
         document.getElementById('noVNC_clipboard_text').select()
         // XMJ: Done
     },

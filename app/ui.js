@@ -618,7 +618,7 @@ var UI = {
         document.getElementById('noVNC_control_bar')
             .classList.add("noVNC_open");
         // Begin XMJ. Open Clipboard by default
-        openClipboardPanel();
+        UI.openClipboardPanel();
         // Done XMJ
     },
 

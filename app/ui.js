@@ -60,6 +60,15 @@ var UI = {
         WebUtil.initSettings(UI.start, callback);
     },
 
+    // XJ: Verification of closing window
+    unloadEvent: function(e) {
+      var confirmationMessage = "Are you sure you want to close the window? The Docker container will continue in the background.";
+
+      (e || window.event).returnValue = confirmationMessage; //Gecko + IE
+      return confirmationMessage; //Webkit, Safari, Chrome etc.
+    },
+    // XJ Done
+
     // Render default UI and initialize settings menu
     start: function(callback) {
 
@@ -126,6 +135,10 @@ var UI = {
         if (typeof callback === "function") {
             callback(UI.rfb);
         }
+
+        // XJ: Verification of closing window
+        window.addEventListener("beforeunload", unloadEvent);
+        // XJ Done
     },
 
     initFullscreen: function() {
@@ -429,12 +442,6 @@ var UI = {
 
         switch (state) {
             case 'connecting':
-                // XJ: Verification of closing window
-                window.onbeforeunload = function () {
-                    return 'Are you sure you want to close the window? The Docker container will continue in the background.';
-                };
-                // XJ Done
-
                 document.getElementById("noVNC_transition_text").textContent = _("Connecting...");
                 document.documentElement.classList.add("noVNC_connecting");
                 break;
@@ -470,6 +477,7 @@ var UI = {
 
         UI.updateVisualState();
     },
+
 
     // Disable/enable controls depending on connection state
     updateVisualState: function() {

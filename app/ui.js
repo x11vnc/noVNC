@@ -1050,6 +1050,7 @@ var UI = {
 
     clipboardCopy: function() {
         document.getElementById('noVNC_clipboard_text').focus();
+        document.getElementById('noVNC_clipboard_text').select();
         document.execCommand("copy");
     },
 

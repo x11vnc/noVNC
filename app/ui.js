@@ -636,7 +636,7 @@ var UI = {
             .classList.contains("noVNC_open")) {
             UI.closeControlbar();
         } else {
-            UI.openControlbar();
+            UI.openClipboardPanel();
         }
     },
 
@@ -761,9 +761,6 @@ var UI = {
             e.stopPropagation();
             UI.keepControlbar();
             UI.activateControlbar();
-            if (UI.connected) {
-                UI.openClipboardPanel();
-            }
         }
         UI.controlbarGrabbed = false;
         UI.showControlbarHint(false);

@@ -290,9 +290,6 @@ var UI = {
         document.getElementById("noVNC_keyboardinput")
             .addEventListener('submit', function () { return false; });
 
-        document.addEventListener('paste', UI.pasteToClipboard);
-        document.addEventListener('copy', UI.copyFromClipboard);
-
         document.documentElement
             .addEventListener('mousedown', UI.keepVirtualKeyboard, true);
 
@@ -369,6 +366,12 @@ var UI = {
             .addEventListener('blur', UI.displayFocus);
         document.getElementById("noVNC_clipboard_text")
             .addEventListener('change', UI.clipboardSend);
+
+        document.getElementById("noVNC_clipboard_text")
+            .addEventListener('paste', UI.pasteToClipboard);
+        document.getElementById("noVNC_clipboard_text")
+            .addEventListener('copy', UI.copyFromClipboard);
+
         document.getElementById("noVNC_clipboard_copy_button")
             .addEventListener('click', UI.clipboardCopy);
         document.getElementById("noVNC_clipboard_clear_button")
@@ -1011,9 +1014,9 @@ var UI = {
  *   CLIPBOARD
  * ------v------*/
 
-    openClipboardPanel: function(isopen=false) {
+    openClipboardPanel: function(isopen) {
         UI.closeAllPanels();
-        if (!isopen) {
+        if (typeof isopen === 'undefined' || !isopen) {
             UI.openControlbar();
         }
 
@@ -1023,6 +1026,7 @@ var UI = {
             .classList.add("noVNC_selected");
 
         // XMJ: Focus on the textarea and select the text
+        document.getElementById('noVNC_clipboard_text').focus();
         document.getElementById('noVNC_clipboard_text').select();
         // XMJ: Done
     },
@@ -1052,6 +1056,9 @@ var UI = {
     clipboardCopy: function() {
         document.getElementById('noVNC_clipboard_text').select();
         document.execCommand("copy");
+        UI.closeControlbar();
+
+        showStatus('Copied text into host clipboard.', 'info', 2000);
     },
 
     clipboardClear: function() {
@@ -1602,8 +1609,6 @@ var UI = {
 
     // When pasting into the input area, write into clipboard from host
     pasteToClipboard: function(e) {
-        if (!UI.rfb) return;
-
         var pastedText = undefined;
         if (window.clipboardData && window.clipboardData.getData) { // IE
             pastedText = window.clipboardData.getData('Text');
@@ -1611,23 +1616,17 @@ var UI = {
             pastedText = e.clipboardData.getData('text/plain');
         }
 
-        UI.closeControlbarTimeout = setTimeout(UI.closeControlbar, 2000);
-        UI.openClipboardPanel();
         UI.clipboardReceive(UI.rfb, pastedText);
         UI.clipboardSend();
+        UI.closeControlbar();
+        showStatus('Pasted text into guest clipboard.', 'info', 2000);
 
         return false; // Prevent the default handler from running.
     },
 
     // When copying into the input area, copy from clipboard to host
     copyFromClipboard: function(e) {
-        if (!UI.rfb) return;
-
-        UI.closeControlbarTimeout = setTimeout(UI.closeControlbar, 2000);
-        UI.openClipboardPanel();
-
-        document.getElementById('noVNC_clipboard_text').select();
-        document.execCommand("copy");
+        UI.clipboardCopy();
 
         return false; // Prevent the default handler from running.
     },

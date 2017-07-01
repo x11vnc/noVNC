@@ -623,10 +623,6 @@ var UI = {
     openControlbar: function() {
         document.getElementById('noVNC_control_bar')
             .classList.add("noVNC_open");
-        // Open Clipboard if connected
-        if (UI.connected) {
-            UI.openClipboardPanel(true);
-        }
     },
 
     closeControlbar: function() {
@@ -765,6 +761,9 @@ var UI = {
             e.stopPropagation();
             UI.keepControlbar();
             UI.activateControlbar();
+            if (UI.connected) {
+                UI.openClipboardPanel();
+            }
         }
         UI.controlbarGrabbed = false;
         UI.showControlbarHint(false);
@@ -1014,11 +1013,9 @@ var UI = {
  *   CLIPBOARD
  * ------v------*/
 
-    openClipboardPanel: function(isopen) {
+    openClipboardPanel: function() {
         UI.closeAllPanels();
-        if (typeof isopen === 'undefined' || !isopen) {
-            UI.openControlbar();
-        }
+        UI.openControlbar();
 
         document.getElementById('noVNC_clipboard')
             .classList.add("noVNC_open");

@@ -318,6 +318,8 @@ var UI = {
     addExtraKeysHandlers: function() {
         document.getElementById("noVNC_toggle_extra_keys_button")
             .addEventListener('click', UI.toggleExtraKeys);
+        document.getElementById("noVNC_toggle_shift_button")
+            .addEventListener('click', UI.toggleShift);
         document.getElementById("noVNC_toggle_ctrl_button")
             .addEventListener('click', UI.toggleCtrl);
         document.getElementById("noVNC_toggle_alt_button")
@@ -364,6 +366,14 @@ var UI = {
             .addEventListener('blur', UI.displayFocus);
         document.getElementById("noVNC_clipboard_text")
             .addEventListener('change', UI.clipboardSend);
+
+        document.getElementById("noVNC_clipboard_text")
+            .addEventListener('paste', UI.pasteToClipboard);
+        document.getElementById("noVNC_clipboard_text")
+            .addEventListener('copy', UI.copyFromClipboard);
+
+        document.getElementById("noVNC_clipboard_copy_button")
+            .addEventListener('click', UI.clipboardCopy);
         document.getElementById("noVNC_clipboard_clear_button")
             .addEventListener('click', UI.clipboardClear);
     },
@@ -429,11 +439,19 @@ var UI = {
 
         switch (state) {
             case 'connecting':
-                // XJ: Verification of closing window
-                window.onbeforeunload = function () {
-                    return 'Are you sure you want to close the window? The Docker container will continue in the background.';
+                // XMJ: Verification of closing window
+                window.onbeforeunload = function (e) {
+                    e = e || window.event;
+
+                    // For IE and Firefox prior to version 4
+                    if (e) {
+                        e.returnValue = 'Are you sure you want to close the window?';
+                    }
+
+                    // For Safari
+                    return 'Are you sure you want to close the window?';
                 };
-                // XJ Done
+                // XMJ Done
 
                 document.getElementById("noVNC_transition_text").textContent = _("Connecting...");
                 document.documentElement.classList.add("noVNC_connecting");
@@ -448,6 +466,8 @@ var UI = {
                     msg = _("Connected (unencrypted) to ") + UI.desktopName;
                 }
                 UI.showStatus(msg);
+                UI.showStatus('To exit the desktop, use the Logout ' +
+                'button in the menu at the lower-left corner.', 'info', 3000)
                 break;
             case 'disconnecting':
                 UI.connected = false;
@@ -455,9 +475,9 @@ var UI = {
                 document.documentElement.classList.add("noVNC_disconnecting");
                 break;
             case 'disconnected':
-                // XJ: Disable verification of closing window
+                // XMJ: Disable verification of closing window
                 window.onbeforeunload = function (e) {};
-                // XJ Done
+                // XMJ Done
 
                 UI.showStatus(_("Disconnected"));
                 break;
@@ -470,6 +490,7 @@ var UI = {
 
         UI.updateVisualState();
     },
+
 
     // Disable/enable controls depending on connection state
     updateVisualState: function() {
@@ -615,7 +636,7 @@ var UI = {
             .classList.contains("noVNC_open")) {
             UI.closeControlbar();
         } else {
-            UI.openControlbar();
+            UI.openClipboardPanel();
         }
     },
 
@@ -997,6 +1018,11 @@ var UI = {
             .classList.add("noVNC_open");
         document.getElementById('noVNC_clipboard_button')
             .classList.add("noVNC_selected");
+
+        // XMJ: Focus on the textarea and select the text
+        document.getElementById('noVNC_clipboard_text').focus();
+        document.getElementById('noVNC_clipboard_text').select();
+        // XMJ: Done
     },
 
     closeClipboardPanel: function() {
@@ -1019,6 +1045,14 @@ var UI = {
         Log.Debug(">> UI.clipboardReceive: " + text.substr(0,40) + "...");
         document.getElementById('noVNC_clipboard_text').value = text;
         Log.Debug("<< UI.clipboardReceive");
+    },
+
+    clipboardCopy: function() {
+        document.getElementById('noVNC_clipboard_text').select();
+        document.execCommand("copy");
+        UI.closeControlbar();
+
+        UI.showStatus('Copied text into host clipboard.', 'info', 2000);
     },
 
     clipboardClear: function() {
@@ -1567,6 +1601,30 @@ var UI = {
         }
     },
 
+    // When pasting into the input area, write into clipboard from host
+    pasteToClipboard: function(e) {
+        var pastedText = undefined;
+        if (window.clipboardData && window.clipboardData.getData) { // IE
+            pastedText = window.clipboardData.getData('Text');
+        } else if (e.clipboardData && e.clipboardData.getData) {
+            pastedText = e.clipboardData.getData('text/plain');
+        }
+
+        UI.clipboardReceive(UI.rfb, pastedText);
+        UI.clipboardSend();
+        UI.closeControlbar();
+        UI.showStatus('Pasted text into guest clipboard.', 'info', 2000);
+
+        return false; // Prevent the default handler from running.
+    },
+
+    // When copying into the input area, copy from clipboard to host
+    copyFromClipboard: function(e) {
+        UI.clipboardCopy();
+
+        return false; // Prevent the default handler from running.
+    },
+
 /* ------^-------
  *   /KEYBOARD
  * ==============
@@ -1610,6 +1668,19 @@ var UI = {
     sendF11: function() {
         UI.rfb.sendKey(KeyTable.XK_F11);
     },
+
+    // Begin XMJ
+    toggleShift: function() {
+        var btn = document.getElementById('noVNC_toggle_shift_button');
+        if (btn.classList.contains("noVNC_selected")) {
+            UI.rfb.sendKey(KeyTable.XK_Shift_L, "ShiftLeft", false);
+            btn.classList.remove("noVNC_selected");
+        } else {
+            UI.rfb.sendKey(KeyTable.XK_Shift_L, "ShiftLeft", true);
+            btn.classList.add("noVNC_selected");
+        }
+    },
+    // End XMJ
 
     toggleCtrl: function() {
         var btn = document.getElementById('noVNC_toggle_ctrl_button');

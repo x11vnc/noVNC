@@ -1058,7 +1058,7 @@ var UI = {
         document.execCommand("copy");
         UI.closeControlbar();
 
-        showStatus('Copied text into host clipboard.', 'info', 2000);
+        UI.showStatus('Copied text into host clipboard.', 'info', 2000);
     },
 
     clipboardClear: function() {
@@ -1619,7 +1619,7 @@ var UI = {
         UI.clipboardReceive(UI.rfb, pastedText);
         UI.clipboardSend();
         UI.closeControlbar();
-        showStatus('Pasted text into guest clipboard.', 'info', 2000);
+        UI.showStatus('Pasted text into guest clipboard.', 'info', 2000);
 
         return false; // Prevent the default handler from running.
     },

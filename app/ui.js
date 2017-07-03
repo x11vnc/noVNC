@@ -1050,6 +1050,7 @@ var UI = {
     clipboardCopy: function() {
         document.getElementById('noVNC_clipboard_text').select();
         document.execCommand("copy");
+        UI.closeControlbar();
     },
 
     clipboardClear: function() {
@@ -1619,7 +1620,6 @@ var UI = {
 
     // When copying into the input area, copy from clipboard to host
     copyFromClipboard: function(e) {
-        UI.closeControlbar();
         UI.showStatus('Copied text into host clipboard.', 'info', 2000);
         document.getElementById('noVNC_clipboard_text').select();
 

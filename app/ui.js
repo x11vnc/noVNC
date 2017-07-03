@@ -1621,8 +1621,9 @@ var UI = {
     copyFromClipboard: function(e) {
         UI.closeControlbar();
         UI.showStatus('Copied text into host clipboard.', 'info', 2000);
+        document.getElementById('noVNC_clipboard_text').select();
 
-        return false; // Prevent the default handler from running.
+        return true;
     },
 
 /* ------^-------

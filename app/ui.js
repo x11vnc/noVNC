@@ -38,6 +38,7 @@ var UI = {
     controlbarMouseDownOffsetY: 0,
 
     isSafariOrChrome: false,
+    isMac: false,
     rememberedClipSetting: null,
     lastKeyboardinput: null,
     defaultKeyboardinputLen: 100,
@@ -66,6 +67,8 @@ var UI = {
         // Setup global variables first
         UI.isSafariOrChrome = (navigator.userAgent.indexOf('Safari') !== -1 ||
                                navigator.userAgent.indexOf('Chrome') !== -1);
+
+        UI.isMac = navigator.platform.indexOf('Mac') !== -1;
 
         UI.initSettings();
 
@@ -374,6 +377,8 @@ var UI = {
 
         document.getElementById("noVNC_clipboard_copy_button")
             .addEventListener('click', UI.clipboardCopy);
+        document.getElementById("noVNC_clipboard_paste_button")
+            .addEventListener('click', UI.clipboardPaste);
         document.getElementById("noVNC_clipboard_clear_button")
             .addEventListener('click', UI.clipboardClear);
     },
@@ -1053,6 +1058,15 @@ var UI = {
         UI.closeControlbar();
     },
 
+    clipboardPaste: function() {
+        document.getElementById('noVNC_clipboard_text').focus();
+        if (UI.isMac) {
+            UI.showStatus('Press Cmd-V to paste into guest\'s clipboard.', 'info', 2000);
+        } else {
+          UI.showStatus('Press Ctrl-V to paste into guest\'s clipboard.', 'info', 2000);
+        }
+    },
+
     clipboardClear: function() {
         document.getElementById('noVNC_clipboard_text').value = "";
         UI.rfb.clipboardPasteFrom("");
@@ -1611,7 +1625,7 @@ var UI = {
         UI.clipboardReceive(UI.rfb, pastedText);
         UI.clipboardSend();
         UI.closeControlbar();
-        UI.showStatus('Pasted text into guest clipboard.', 'info', 2000);
+        UI.showStatus('Pasted text into guest\'s clipboard.', 'info', 2000);
         e.stopPropagation();
         e.preventDefault();
 
@@ -1620,7 +1634,7 @@ var UI = {
 
     // When copying into the input area, copy from clipboard to host
     copyFromClipboard: function(e) {
-        UI.showStatus('Copied text into host clipboard.', 'info', 2000);
+        UI.showStatus('Copied text into host\'s clipboard.', 'info', 2000);
         document.getElementById('noVNC_clipboard_text').select();
 
         return true;

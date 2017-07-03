@@ -1614,6 +1614,8 @@ var UI = {
         UI.clipboardSend();
         UI.closeControlbar();
         UI.showStatus('Pasted text into guest clipboard.', 'info', 2000);
+        e.stopPropagation();
+        e.preventDefault();
 
         return false; // Prevent the default handler from running.
     },

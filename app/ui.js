@@ -1603,21 +1603,10 @@ var UI = {
 
     // When pasting into the input area, write into clipboard from host
     pasteToClipboard: function(e) {
-        var pastedText = undefined;
-        if (window.clipboardData && window.clipboardData.getData) { // IE
-            pastedText = window.clipboardData.getData('Text');
-        } else if (e.clipboardData && e.clipboardData.getData) {
-            pastedText = e.clipboardData.getData('text/plain');
-        }
-
-        UI.clipboardReceive(UI.rfb, pastedText);
-        UI.clipboardSend();
         UI.closeControlbar();
         UI.showStatus('Pasted text into guest clipboard.', 'info', 2000);
-        e.stopPropagation();
-        e.preventDefault();
 
-        return false; // Prevent the default handler from running.
+        return false;
     },
 
     // When copying into the input area, copy from clipboard to host

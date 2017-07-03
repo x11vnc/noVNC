@@ -368,7 +368,7 @@ var UI = {
             .addEventListener('change', UI.clipboardSend);
 
         document.getElementById("noVNC_clipboard_text")
-            .addEventListener('paste', UI.pasteToClipboard);
+            .onpaste = UI.pasteToClipboard;
         document.getElementById("noVNC_clipboard_text")
             .addEventListener('copy', UI.copyFromClipboard);
 
@@ -439,6 +439,10 @@ var UI = {
 
         switch (state) {
             case 'connecting':
+                document.getElementById("noVNC_transition_text").textContent = _("Connecting...");
+                document.documentElement.classList.add("noVNC_connecting");
+                break;
+            case 'connected':
                 // XMJ: Verification of closing window
                 window.onbeforeunload = function (e) {
                     e = e || window.event;
@@ -453,10 +457,6 @@ var UI = {
                 };
                 // XMJ Done
 
-                document.getElementById("noVNC_transition_text").textContent = _("Connecting...");
-                document.documentElement.classList.add("noVNC_connecting");
-                break;
-            case 'connected':
                 UI.connected = true;
                 UI.inhibit_reconnect = false;
                 document.documentElement.classList.add("noVNC_connected");
@@ -1051,8 +1051,6 @@ var UI = {
         document.getElementById('noVNC_clipboard_text').select();
         document.execCommand("copy");
         UI.closeControlbar();
-
-        UI.showStatus('Copied text into host clipboard.', 'info', 2000);
     },
 
     clipboardClear: function() {
@@ -1622,9 +1620,10 @@ var UI = {
 
     // When copying into the input area, copy from clipboard to host
     copyFromClipboard: function(e) {
-        UI.clipboardCopy();
+        UI.showStatus('Copied text into host clipboard.', 'info', 2000);
+        document.getElementById('noVNC_clipboard_text').select();
 
-        return false; // Prevent the default handler from running.
+        return true;
     },
 
 /* ------^-------

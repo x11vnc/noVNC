@@ -960,8 +960,10 @@ var UI = {
         if (UI.connected &&
             UI.rfb.capabilities.power &&
             !UI.rfb.viewOnly) {
+            /* Disable enabling noVNC_hidden
             document.getElementById('noVNC_power_button')
                 .classList.remove("noVNC_hidden");
+            */
         } else {
             document.getElementById('noVNC_power_button')
                 .classList.add("noVNC_hidden");

@@ -435,15 +435,8 @@ var UI = {
                 };
                 // XMJ Done
 
-                UI.connected = true;
-                UI.inhibit_reconnect = false;
                 document.documentElement.classList.add("noVNC_connected");
-                if (rfb && rfb.get_encrypt()) {
-                    msg = _("Connected (encrypted) to ") + UI.desktopName;
-                } else {
-                    msg = _("Connected (unencrypted) to ") + UI.desktopName;
-                }
-                UI.showStatus(msg);
+
                 UI.showStatus('To exit the desktop, use the Logout ' +
                 'button in the menu at the lower-left corner.', 'info', 3000)
                 break;

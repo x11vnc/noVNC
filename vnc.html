@@ -79,7 +79,7 @@
         });
     </script>
     <!-- actual script modules -->
-    <script type="module" src="app/ui.js?version=17.07.03"></script>
+    <script type="module" crossorigin="anonymous" src="app/ui.js?version=17.11.17"></script>
     <!-- end scripts -->
 </head>
 
@@ -159,18 +159,18 @@
                 </div>
             </div>
 
-            <!-- XVP Shutdown/Reboot -->
+            <!-- Shutdown/Reboot -->
             <input type="image" alt="Shutdown/Reboot" src="app/images/power.svg"
-                id="noVNC_xvp_button" class="noVNC_button noVNC_hidden"
+                id="noVNC_power_button" class="noVNC_button noVNC_hidden"
                 title="Shutdown/Reboot..." />
             <div class="noVNC_vcenter">
-            <div id="noVNC_xvp" class="noVNC_panel">
+            <div id="noVNC_power" class="noVNC_panel">
                 <div class="noVNC_heading">
                     <img src="app/images/power.svg"> Power
                 </div>
-                <input type="button" id="noVNC_xvp_shutdown_button" value="Shutdown" />
-                <input type="button" id="noVNC_xvp_reboot_button" value="Reboot" />
-                <input type="button" id="noVNC_xvp_reset_button" value="Reset" />
+                <input type="button" id="noVNC_shutdown_button" value="Shutdown" />
+                <input type="button" id="noVNC_reboot_button" value="Reboot" />
+                <input type="button" id="noVNC_reset_button" value="Reset" />
             </div>
             </div>
 
@@ -217,14 +217,13 @@
                     </li>
                     <li><hr></li>
                     <li>
-                        <label><input id="noVNC_setting_clip" type="checkbox" /> Clip to Window</label>
+                        <label><input id="noVNC_setting_view_clip" type="checkbox" /> Clip to Window</label>
                     </li>
                     <li>
                         <label for="noVNC_setting_resize">Scaling Mode:</label>
                         <select id="noVNC_setting_resize" name="vncResize">
                             <option value="off">None</option>
                             <option value="scale">Local Scaling</option>
-                            <option value="downscale">Local Downscaling</option>
                             <option value="remote">Remote Resizing</option>
                         </select>
                     </li>
@@ -232,10 +231,6 @@
                     <li>
                         <div class="noVNC_expander">Advanced</div>
                         <div><ul>
-                            <li>
-                                <label><input id="noVNC_setting_cursor" type="checkbox" /> Local Cursor</label>
-                            </li>
-                            <li><hr></li>
                             <li>
                                 <label for="noVNC_setting_repeaterID">Repeater ID:</label>
                                 <input id="noVNC_setting_repeaterID" type="input" value="" />
@@ -340,7 +335,7 @@
                  style for example -->
             <textarea id="noVNC_keyboardinput" autocapitalize="off"
                 autocorrect="off" autocomplete="off" spellcheck="false"
-                mozactionhint="Enter"></textarea>
+                mozactionhint="Enter" tabindex="-1"></textarea>
 
             <canvas id="noVNC_canvas" width="0" height="0">
                         Canvas not supported.

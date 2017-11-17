@@ -5,10 +5,7 @@ var expect = chai.expect;
 import Websock from '../core/websock.js';
 import FakeWebSocket from './fake.websocket.js';
 
-import './assertions';
-import 'sinon';
-import sinonChai from '../node_modules/sinon-chai/lib/sinon-chai.js';
-chai.use(sinonChai);
+import sinon from '../vendor/sinon.js';
 
 describe('Websock', function() {
     "use strict";
@@ -391,15 +388,6 @@ describe('Websock', function() {
             expect(sock._rQlen).to.equal(30);
             expect(sock.get_rQi()).to.equal(0);
             expect(sock._rQ.length).to.equal(240);  // keep the invariant that rQbufferSize / 8 >= rQlen
-        });
-
-        it('should call the error event handler on an exception', function () {
-            sock._eventHandlers.error = sinon.spy();
-            sock._eventHandlers.message = sinon.stub().throws();
-            var msg = { data: new Uint8Array([1, 2, 3]).buffer };
-            sock._mode = 'binary';
-            sock._recv_message(msg);
-            expect(sock._eventHandlers.error).to.have.been.calledOnce;
         });
     });
 

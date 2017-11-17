@@ -5,7 +5,7 @@
     <!--
     noVNC example: lightweight example using minimal UI and features
     Copyright (C) 2012 Joel Martin
-    Copyright (C) 2013 Samuel Mannehed for Cendio AB
+    Copyright (C) 2017 Samuel Mannehed for Cendio AB
     noVNC is licensed under the MPL 2.0 (see LICENSE.txt)
     This file is licensed under the 2-Clause BSD license (see LICENSE.txt).
 
@@ -60,13 +60,27 @@
 
     <!-- promise polyfills promises for IE11 -->
     <script src="vendor/promise.js"></script>
-    <script src="vendor/browser-es-module-loader/dist/browser-es-module-loader.js"></script>
+    <!-- ES2015/ES6 modules polyfill -->
     <script type="module">
+        window._noVNC_has_module_support = true;
+    </script>
+    <script>
+        window.addEventListener("load", function() {
+            if (window._noVNC_has_module_support) return;
+            var loader = document.createElement("script");
+            loader.src = "vendor/browser-es-module-loader/dist/browser-es-module-loader.js";
+            document.head.appendChild(loader);
+        });
+    </script>
+
+    <!-- actual script modules -->
+    <script type="module" crossorigin="anonymous">
         // Load supporting scripts
         import * as WebUtil from './app/webutil.js';
         import RFB from './core/rfb.js';
 
         var rfb;
+        var doneInitialResize;
         var resizeTimeout;
         var desktopName;
 
@@ -79,49 +93,46 @@
                     rfb.requestDesktopSize(innerW, innerH - controlbarH);
             }
         }
-        function FBUComplete(rfb, fbu) {
+        function initialResize() {
+            if (doneInitialResize) return;
             UIresize();
-            rfb.set_onFBUComplete(function() { });
+            doneInitialResize = true;
         }
-        function updateDesktopName(rfb, name) {
-            desktopName = name;
+        function updateDesktopName(e) {
+            desktopName = e.detail.name;
         }
-        function passwordRequired(rfb, msg) {
-            if (typeof msg === 'undefined') {
-                msg = 'Password Required: ';
-            }
+        function credentials(e) {
             var html;
 
             var form = document.createElement('form');
-            form.style = 'margin-bottom: 0px';
-            form.innerHTML = '<label></label>'
-            form.innerHTML += '<input type=password size=10 id="password_input" class="noVNC_status">';
+            form.innerHTML = '<label></label>';
+            form.innerHTML += '<input type=password size=10 id="password_input">';
             form.onsubmit = setPassword;
 
             // bypass status() because it sets text content
             document.getElementById('noVNC_status_bar').setAttribute("class", "noVNC_status_warn");
             document.getElementById('noVNC_status').innerHTML = '';
             document.getElementById('noVNC_status').appendChild(form);
-            document.getElementById('noVNC_status').querySelector('label').textContent = msg;
+            document.getElementById('noVNC_status').querySelector('label').textContent = 'Password Required: ';
         }
         function setPassword() {
-            rfb.sendPassword(document.getElementById('password_input').value);
+            rfb.sendCredentials({ password: document.getElementById('password_input').value });
             return false;
         }
         function sendCtrlAltDel() {
             rfb.sendCtrlAltDel();
             return false;
         }
-        function xvpShutdown() {
-            rfb.xvpShutdown();
+        function machineShutdown() {
+            rfb.machineShutdown();
             return false;
         }
-        function xvpReboot() {
-            rfb.xvpReboot();
+        function machineReboot() {
+            rfb.machineReboot();
             return false;
         }
-        function xvpReset() {
-            rfb.xvpReset();
+        function machineReset() {
+            rfb.machineReset();
             return false;
         }
         function status(text, level) {
@@ -133,50 +144,29 @@
                 default:
                     level = "warn";
             }
-            document.getElementById('noVNC_status_bar').setAttribute("class", "noVNC_status_" + level);
+            document.getElementById('noVNC_status_bar').className = "noVNC_status_" + level;
             document.getElementById('noVNC_status').textContent = text;
         }
-        function updateState(rfb, state, oldstate) {
-            var cad = document.getElementById('sendCtrlAltDelButton');
-            switch (state) {
-                case 'connecting':
-                    status("Connecting", "normal");
-                    break;
-                case 'connected':
-                    if (rfb && rfb.get_encrypt()) {
-                        status("Connected (encrypted) to " +
-                               desktopName, "normal");
-                    } else {
-                        status("Connected (unencrypted) to " +
-                               desktopName, "normal");
-                    }
-                    break;
-                case 'disconnecting':
-                    status("Disconnecting", "normal");
-                    break;
-                case 'disconnected':
-                    status("Disconnected", "normal");
-                    break;
-                default:
-                    status(state, "warn");
-                    break;
-            }
 
-            if (state === 'connected') {
-                cad.disabled = false;
+        function connected(e) {
+            document.getElementById('sendCtrlAltDelButton').disabled = false;
+            doneInitialResize = false;
+            if (WebUtil.getConfigVar('encrypt',
+                                     (window.location.protocol === "https:"))) {
+                status("Connected (encrypted) to " + desktopName, "normal");
             } else {
-                cad.disabled = true;
-                xvpInit(0);
+                status("Connected (unencrypted) to " + desktopName, "normal");
             }
+        }
 
-        }
-        function disconnected(rfb, reason) {
-            if (typeof(reason) !== 'undefined') {
-                status(reason, "error");
+        function disconnected(e) {
+            document.getElementById('sendCtrlAltDelButton').disabled = true;
+            updatePowerButtons();
+            if (e.detail.clean) {
+                status("Disconnected", "normal");
+            } else {
+                status("Something went wrong, connection is closed", "error");
             }
-        }
-        function notification(rfb, msg, level, options) {
-            status(msg, level);
         }
 
         window.onresize = function () {
@@ -189,21 +179,20 @@
             }, 500);
         };
 
-        function xvpInit(ver) {
-            var xvpbuttons;
-            xvpbuttons = document.getElementById('noVNC_xvp_buttons');
-            if (ver >= 1) {
-                xvpbuttons.style.display = 'inline';
+        function updatePowerButtons() {
+            var powerbuttons;
+            powerbuttons = document.getElementById('noVNC_power_buttons');
+            if (rfb.capabilities.power) {
+                powerbuttons.className= "noVNC_shown";
             } else {
-                xvpbuttons.style.display = 'none';
+                powerbuttons.className = "noVNC_hidden";
             }
         }
 
-        document.getElementById('sendCtrlAltDelButton').style.display = "inline";
         document.getElementById('sendCtrlAltDelButton').onclick = sendCtrlAltDel;
-        document.getElementById('xvpShutdownButton').onclick = xvpShutdown;
-        document.getElementById('xvpRebootButton').onclick = xvpReboot;
-        document.getElementById('xvpResetButton').onclick = xvpReset;
+        document.getElementById('machineShutdownButton').onclick = machineShutdown;
+        document.getElementById('machineRebootButton').onclick = machineReboot;
+        document.getElementById('machineResetButton').onclick = machineReset;
 
         WebUtil.init_logging(WebUtil.getConfigVar('logging', 'warn'));
         document.title = WebUtil.getConfigVar('title', 'noVNC');
@@ -237,60 +226,61 @@
 
         (function() {
 
+            status("Connecting", "normal");
+
             if ((!host) || (!port)) {
                 status('Must specify host and port in URL', 'error');
             }
 
-            try {
-                rfb = new RFB({'target':       document.getElementById('noVNC_canvas'),
-                               'encrypt':      WebUtil.getConfigVar('encrypt',
-                                        (window.location.protocol === "https:")),
-                               'repeaterID':   WebUtil.getConfigVar('repeaterID', ''),
-                               'local_cursor': WebUtil.getConfigVar('cursor', true),
-                               'shared':       WebUtil.getConfigVar('shared', true),
-                               'view_only':    WebUtil.getConfigVar('view_only', false),
-                               'onNotification':  notification,
-                               'onUpdateState':  updateState,
-                               'onDisconnected': disconnected,
-                               'onXvpInit':    xvpInit,
-                               'onPasswordRequired':  passwordRequired,
-                               'onFBUComplete': FBUComplete,
-                               'onDesktopName': updateDesktopName});
-            } catch (exc) {
-                status('Unable to create RFB client -- ' + exc, 'error');
-                return; // don't continue trying to connect
+            var url;
+
+            if (WebUtil.getConfigVar('encrypt',
+                                     (window.location.protocol === "https:"))) {
+                url = 'wss';
+            } else {
+                url = 'ws';
             }
 
-            rfb.connect(host, port, password, path);
+            url += '://' + host;
+            if(port) {
+                url += ':' + port;
+            }
+            url += '/' + path;
+
+            rfb = new RFB(document.getElementById('noVNC_canvas'), url,
+                          { repeaterID: WebUtil.getConfigVar('repeaterID', ''),
+                            shared: WebUtil.getConfigVar('shared', true),
+                            credentials: { password: password } });
+            rfb.viewOnly = WebUtil.getConfigVar('view_only', false);
+            rfb.addEventListener("connect",  connected);
+            rfb.addEventListener("disconnect", disconnected);
+            rfb.addEventListener("capabilities", function () { updatePowerButtons(); initialResize(); });
+            rfb.addEventListener("credentialsrequired", credentials);
+            rfb.addEventListener("desktopname", updateDesktopName);
         })();
     </script>
 </head>
 
-<body style="margin: 0px;">
-    <div id="noVNC_container">
-            <div id="noVNC_status_bar" class="noVNC_status_bar" style="margin-top: 0px;">
-                <table border=0 width="100%"><tr>
-                    <td><div id="noVNC_status" style="position: relative; height: auto;">
-                        Loading
-                    </div></td>
-                    <td width="1%"><div id="noVNC_buttons">
-                        <input type=button value="Send CtrlAltDel"
-                            id="sendCtrlAltDelButton">
-                        <span id="noVNC_xvp_buttons">
-                        <input type=button value="Shutdown"
-                            id="xvpShutdownButton">
-                        <input type=button value="Reboot"
-                            id="xvpRebootButton">
-                        <input type=button value="Reset"
-                            id="xvpResetButton">
-                        </span>
-                            </div></td>
-                </tr></table>
-            </div>
-            <canvas id="noVNC_canvas" width="640px" height="20px">
-                Canvas not supported.
-            </canvas>
-        </div>
+<body>
+  <div id="noVNC_status_bar">
+    <div id="noVNC_left_dummy_elem"></div>
+    <div id="noVNC_status">Loading</div>
+    <div id="noVNC_buttons">
+      <input type=button value="Send CtrlAltDel"
+             id="sendCtrlAltDelButton" class="noVNC_shown">
+      <span id="noVNC_power_buttons" class="noVNC_hidden">
+        <input type=button value="Shutdown"
+               id="machineShutdownButton">
+        <input type=button value="Reboot"
+               id="machineRebootButton">
+        <input type=button value="Reset"
+               id="machineResetButton">
+      </span>
+    </div>
+  </div>
+  <canvas id="noVNC_canvas" width="0" height="0">
+    Canvas not supported.
+  </canvas>
 
-    </body>
+</body>
 </html>

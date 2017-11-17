@@ -47,11 +47,9 @@ function enableUI() {
     startButton.addEventListener('click', start);
 
     frames = VNC_frame_data;
-    encoding = VNC_frame_encoding;
-}
-
-const notification = function (rfb, mesg, level, options) {
-    document.getElementById('VNC_status').textContent = mesg;
+    // Only present in older recordings
+    if (window.VNC_frame_encoding)
+        encoding = VNC_frame_encoding;
 }
 
 function IterationPlayer (iterations, frames, encoding) {
@@ -70,7 +68,6 @@ function IterationPlayer (iterations, frames, encoding) {
     this.onfinish = function() {};
     this.oniterationfinish = function() {};
     this.rfbdisconnected = function() {};
-    this.rfbnotification = function() {};
 }
 
 IterationPlayer.prototype = {
@@ -85,7 +82,7 @@ IterationPlayer.prototype = {
     },
 
     _nextIteration: function () {
-        const player = new RecordingPlayer(this._frames, this._encoding, this._disconnected.bind(this), this._notification.bind(this));
+        const player = new RecordingPlayer(this._frames, this._encoding, this._disconnected.bind(this));
         player.onfinish = this._iterationFinish.bind(this);
 
         if (this._state !== 'running') { return; }
@@ -118,25 +115,16 @@ IterationPlayer.prototype = {
         this._nextIteration();
     },
 
-    _disconnected: function (rfb, reason, frame) {
-        if (reason) {
+    _disconnected: function (rfb, clean, frame) {
+        if (!clean) {
             this._state = 'failed';
         }
 
         var evt = new Event('rfbdisconnected');
-        evt.reason = reason;
+        evt.clean = clean;
         evt.frame = frame;
 
         this.onrfbdisconnected(evt);
-    },
-
-    _notification: function (rfb, msg, level, options) {
-        var evt = new Event('rfbnotification');
-        evt.message = msg;
-        evt.level = level;
-        evt.options = options;
-
-        this.onrfbnotification(evt);
     },
 };
 
@@ -165,9 +153,6 @@ function start() {
             message(`noVNC sent disconnected during iteration ${evt.iteration} frame ${evt.frame}`);
         }
     };
-    player.onrfbnotification = function (evt) {
-        document.getElementById('VNC_status').textContent = evt.message;
-    };
     player.onfinish = function (evt) {
         const iterTime = parseInt(evt.duration / evt.iterations, 10);
         message(`${evt.iterations} iterations took ${evt.duration}ms (average ${iterTime}ms / iteration)`);
@@ -178,4 +163,4 @@ function start() {
     player.start(mode);
 }
 
-loadFile().then(enableUI).catch(function (e) { message("Error loading recording"); });
+loadFile().then(enableUI).catch(function (e) { message("Error loading recording: " + e); });

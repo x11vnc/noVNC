@@ -8,7 +8,6 @@ noVNC is a HTML5 VNC client that runs well in any modern browser including
 mobile browsers (iOS and Android).
 
 Many companies, projects and products have integrated noVNC including
-[Ganeti Web Manager](http://code.osuosl.org/projects/ganeti-webmgr),
 [OpenStack](http://www.openstack.org),
 [OpenNebula](http://opennebula.org/),
 [LibVNCServer](http://libvncserver.sourceforge.net), and
@@ -18,12 +17,12 @@ for a more complete list with additional info and links.
 
 ### News/help/contact
 
+The project website is found at [novnc.com](http://novnc.com).
 Notable commits, announcements and news are posted to
-<a href="http://www.twitter.com/noVNC">@noVNC</a>.
+[@noVNC](http://www.twitter.com/noVNC).
 
 If you are a noVNC developer/integrator/user (or want to be) please join the
-<a href="https://groups.google.com/forum/?fromgroups#!forum/novnc">
-noVNC discussion group</a>.
+[noVNC discussion group](https://groups.google.com/forum/?fromgroups#!forum/novnc).
 
 Bugs and feature requests can be submitted via
 [github issues](https://github.com/novnc/noVNC/issues).
@@ -39,7 +38,7 @@ profits such as:
 [Electronic Frontier Foundation](https://www.eff.org/),
 [Against Malaria Foundation](http://www.againstmalaria.com/),
 [Nothing But Nets](http://www.nothingbutnets.net/), etc.
-Please tweet <a href="http://www.twitter.com/noVNC">@noVNC</a> if you do.
+Please tweet [@noVNC](http://www.twitter.com/noVNC) if you do.
 
 
 ### Features
@@ -63,14 +62,14 @@ Running in Firefox before and after connecting:
 <img src="http://novnc.com/img/noVNC-3-connected.png" width=400>
 
 See more screenshots
-<a href="http://novnc.com/screenshots.html">here</a>.
+[here](http://novnc.com/screenshots.html).
 
 
 ### Browser Requirements
 
-* Chrome 8, Firefox 4, Safari 6, Opera 12, IE 11, Edge 12, etc.
+* Chrome 49, Firefox 44, Safari 10, Opera 36, IE 11, Edge 12, etc.
 
-* HTML5 Canvas, WebSockets and Typed Arrays
+* HTML5 Canvas, WebSockets and Typed Arrays, etc.
 
 * Fast Javascript Engine: this is not strictly a requirement, but without a
   fast Javascript engine, noVNC might be painfully slow.
@@ -104,7 +103,7 @@ WebSockets to TCP socket proxy. There is a python proxy included
 
 ### Other Pages
 
-* [Modules/API](https://github.com/novnc/noVNC/wiki/Modules-API) - The library
+* [Modules/API](https://github.com/novnc/noVNC/blob/master/docs/API.md) - The library
   modules and their Javascript API.
 
 * [Integration](https://github.com/novnc/noVNC/wiki/Integration) - Get noVNC

@@ -969,7 +969,6 @@ var UI = {
             !UI.rfb.viewOnly) {
             document.getElementById('noVNC_power_button')
                 .classList.remove("noVNC_hidden");
-            */
         } else {
             document.getElementById('noVNC_power_button')
                 .classList.add("noVNC_hidden");

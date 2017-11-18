@@ -1673,7 +1673,7 @@ var UI = {
             pastedText = e.clipboardData.getData('text/plain');
         }
 
-        UI.clipboardReceive(UI.rfb, pastedText);
+        UI.clipboardReceive(e);
         UI.clipboardSend();
         UI.closeControlbar();
         UI.showStatus('Pasted text into guest\'s clipboard.', 'info', 2000);

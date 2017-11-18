@@ -1010,7 +1010,7 @@ var UI = {
     },
 
     clipboardReceive: function(e, text=null) {
-        if (pasteText) {
+        if (text) {
             // XMJ: Added optional text argument
             Log.Debug(">> UI.clipboardReceive: " + text.substr(0,40) + "...");
             document.getElementById('noVNC_clipboard_text').value = text;

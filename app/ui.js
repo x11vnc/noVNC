@@ -1009,10 +1009,17 @@ var UI = {
         }
     },
 
-    clipboardReceive: function(e) {
-        Log.Debug(">> UI.clipboardReceive: " + e.detail.text.substr(0,40) + "...");
-        document.getElementById('noVNC_clipboard_text').value = e.detail.text;
-        Log.Debug("<< UI.clipboardReceive");
+    clipboardReceive: function(e, text=null) {
+        if (pasteText) {
+            // XMJ: Added optional text argument
+            Log.Debug(">> UI.clipboardReceive: " + text.substr(0,40) + "...");
+            document.getElementById('noVNC_clipboard_text').value = text;
+            Log.Debug("<< UI.clipboardReceive");
+        } else {
+            Log.Debug(">> UI.clipboardReceive: " + e.detail.text.substr(0,40) + "...");
+            document.getElementById('noVNC_clipboard_text').value = e.detail.text;
+            Log.Debug("<< UI.clipboardReceive");
+        }
     },
 
     clipboardCopy: function() {
@@ -1673,7 +1680,7 @@ var UI = {
             pastedText = e.clipboardData.getData('text/plain');
         }
 
-        UI.clipboardReceive(e);
+        UI.clipboardReceive(e, pastedText);
         UI.clipboardSend();
         UI.closeControlbar();
         UI.showStatus('Pasted text into guest\'s clipboard.', 'info', 2000);

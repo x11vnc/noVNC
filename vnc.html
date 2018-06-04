@@ -37,7 +37,9 @@
     <link rel="icon" sizes="144x144" type="image/png" href="app/images/icons/novnc-144x144.png">
     <link rel="icon" sizes="152x152" type="image/png" href="app/images/icons/novnc-152x152.png">
     <link rel="icon" sizes="192x192" type="image/png" href="app/images/icons/novnc-192x192.png">
+    <!-- Firefox currently mishandles SVG, see #1419039
     <link rel="icon" sizes="any" type="image/svg+xml" href="app/images/icons/novnc-icon.svg">
+    -->
     <!-- Repeated last so that legacy handling will pick this -->
     <link rel="icon" sizes="16x16" type="image/png" href="app/images/icons/novnc-16x16.png">
 
@@ -326,22 +328,15 @@
         <div class="noVNC_spinner"></div>
     </div>
 
+    <!-- This is where the RFB elements will attach -->
     <div id="noVNC_container">
-        <!-- HTML5 Canvas -->
-        <div id="noVNC_screen">
-            <!-- Note that Google Chrome on Android doesn't respect any of these,
-                 html attributes which attempt to disable text suggestions on the
-                 on-screen keyboard. Let's hope Chrome implements the ime-mode
-                 style for example -->
-            <textarea id="noVNC_keyboardinput" autocapitalize="off"
-                autocorrect="off" autocomplete="off" spellcheck="false"
-                mozactionhint="Enter" tabindex="-1"></textarea>
-
-            <canvas id="noVNC_canvas" width="0" height="0">
-                        Canvas not supported.
-            </canvas>
-        </div>
-
+        <!-- Note that Google Chrome on Android doesn't respect any of these,
+             html attributes which attempt to disable text suggestions on the
+             on-screen keyboard. Let's hope Chrome implements the ime-mode
+             style for example -->
+        <textarea id="noVNC_keyboardinput" autocapitalize="off"
+            autocorrect="off" autocomplete="off" spellcheck="false"
+            mozactionhint="Enter" tabindex="-1"></textarea>
     </div>
 
     <audio id="noVNC_bell">

@@ -2,21 +2,20 @@
 // native support in the browsers, so that our error handler
 // can catch script-loading errors.
 
-
 (function(){
     "use strict";
 
     // Fallback for all uncought errors
     function handleError (event, err) {
         try {
-            var msg = document.getElementById('noVNC_fallback_errormsg');
+            const msg = document.getElementById('noVNC_fallback_errormsg');
 
             // Only show the initial error
             if (msg.hasChildNodes()) {
                 return false;
             }
 
-            var div = document.createElement("div");
+            let div = document.createElement("div");
             div.classList.add('noVNC_message');
             div.appendChild(document.createTextNode(event.message));
             msg.appendChild(div);
@@ -24,7 +23,7 @@
             if (event.filename) {
                 div = document.createElement("div");
                 div.className = 'noVNC_location';
-                var text = event.filename;
+                let text = event.filename;
                 if (event.lineno !== undefined) {
                     text += ":" + event.lineno;
                     if (event.colno !== undefined) {
@@ -35,7 +34,7 @@
                 msg.appendChild(div);
             }
 
-            if (err && (err.stack !== undefined)) {
+            if (err && err.stack) {
                 div = document.createElement("div");
                 div.className = 'noVNC_stack';
                 div.appendChild(document.createTextNode(err.stack));

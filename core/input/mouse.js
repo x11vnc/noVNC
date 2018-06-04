@@ -5,16 +5,13 @@
  * Licensed under MPL 2.0 or any later version (see LICENSE.txt)
  */
 
-/*jslint browser: true, white: false */
-/*global window, Util */
-
 import * as Log from '../util/logging.js';
-import { isTouchDevice } from '../util/browsers.js';
+import { isTouchDevice } from '../util/browser.js';
 import { setCapture, stopEvent, getPointerEvent } from '../util/events.js';
 
-var WHEEL_STEP = 10; // Delta threshold for a mouse wheel step
-var WHEEL_STEP_TIMEOUT = 50; // ms
-var WHEEL_LINE_HEIGHT = 19;
+const WHEEL_STEP = 10; // Delta threshold for a mouse wheel step
+const WHEEL_STEP_TIMEOUT = 50; // ms
+const WHEEL_LINE_HEIGHT = 19;
 
 export default function Mouse(target) {
     this._target = target || document;
@@ -35,7 +32,7 @@ export default function Mouse(target) {
         'mousewheel': this._handleMouseWheel.bind(this),
         'mousedisable': this._handleMouseDisable.bind(this)
     };
-};
+}
 
 Mouse.prototype = {
     // ===== PROPERTIES =====
@@ -55,9 +52,9 @@ Mouse.prototype = {
 
     _handleMouseButton: function (e, down) {
         this._updateMousePosition(e);
-        var pos = this._pos;
+        let pos = this._pos;
 
-        var bmask;
+        let bmask;
         if (e.touches || e.changedTouches) {
             // Touch device
 
@@ -73,13 +70,13 @@ Mouse.prototype = {
                     // force the position of the latter touch to the position of
                     // the first.
 
-                    var xs = this._lastTouchPos.x - pos.x;
-                    var ys = this._lastTouchPos.y - pos.y;
-                    var d = Math.sqrt((xs * xs) + (ys * ys));
+                    const xs = this._lastTouchPos.x - pos.x;
+                    const ys = this._lastTouchPos.y - pos.y;
+                    const d = Math.sqrt((xs * xs) + (ys * ys));
 
                     // The goal is to trigger on a certain physical width, the
                     // devicePixelRatio brings us a bit closer but is not optimal.
-                    var threshold = 20 * (window.devicePixelRatio || 1);
+                    const threshold = 20 * (window.devicePixelRatio || 1);
                     if (d < threshold) {
                         pos = this._lastTouchPos;
                     }
@@ -159,8 +156,8 @@ Mouse.prototype = {
 
         this._updateMousePosition(e);
 
-        var dX = e.deltaX;
-        var dY = e.deltaY;
+        let dX = e.deltaX;
+        let dY = e.deltaY;
 
         // Pixel units unless it's non-zero.
         // Note that if deltamode is line or page won't matter since we aren't
@@ -218,8 +215,9 @@ Mouse.prototype = {
     // Update coordinates relative to target
     _updateMousePosition: function(e) {
         e = getPointerEvent(e);
-        var bounds = this._target.getBoundingClientRect();
-        var x, y;
+        const bounds = this._target.getBoundingClientRect();
+        let x;
+        let y;
         // Clip to target bounds
         if (e.clientX < bounds.left) {
             x = 0;
@@ -241,7 +239,7 @@ Mouse.prototype = {
     // ===== PUBLIC METHODS =====
 
     grab: function () {
-        var c = this._target;
+        const c = this._target;
 
         if (isTouchDevice) {
             c.addEventListener('touchstart', this._eventHandlers.mousedown);
@@ -262,7 +260,7 @@ Mouse.prototype = {
     },
 
     ungrab: function () {
-        var c = this._target;
+        const c = this._target;
 
         this._resetWheelStepTimers();
 

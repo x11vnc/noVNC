@@ -9,12 +9,12 @@ import * as Log from '../core/util/logging.js';
 import Base64 from '../core/base64.js';
 
 // Immediate polyfill
-if (setImmediate === undefined) {
-    var _immediateIdCounter = 1;
-    var _immediateFuncs = {};
+if (window.setImmediate === undefined) {
+    let _immediateIdCounter = 1;
+    const _immediateFuncs = {};
 
-    var setImmediate = function (func) {
-        var index = _immediateIdCounter++;
+    window.setImmediate = function (func) {
+        const index = _immediateIdCounter++;
         _immediateFuncs[index] = func;
         window.postMessage("noVNC immediate trigger:" + index, "*");
         return index;
@@ -24,15 +24,15 @@ if (setImmediate === undefined) {
         _immediateFuncs[id];
     };
 
-    var _onMessage = function (event) {
+    const _onMessage = function (event) {
         if ((typeof event.data !== "string") ||
             (event.data.indexOf("noVNC immediate trigger:") !== 0)) {
             return;
         }
 
-        var index = event.data.slice("noVNC immediate trigger:".length);
+        const index = event.data.slice("noVNC immediate trigger:".length);
 
-        var callback = _immediateFuncs[index];
+        const callback = _immediateFuncs[index];
         if (callback === undefined) {
             return;
         }
@@ -51,8 +51,8 @@ export default function RecordingPlayer (frames, encoding, disconnected) {
     this._disconnected = disconnected;
 
     if (this._encoding === undefined) {
-        let frame = this._frames[0];
-        let start = frame.indexOf('{', 1) + 1;
+        const frame = this._frames[0];
+        const start = frame.indexOf('{', 1) + 1;
         if (frame.slice(start).startsWith('UkZC')) {
             this._encoding = 'base64';
         } else {
@@ -76,7 +76,7 @@ export default function RecordingPlayer (frames, encoding, disconnected) {
 RecordingPlayer.prototype = {
     run: function (realtime, trafficManagement) {
         // initialize a new RFB
-        this._rfb = new RFB(document.getElementById('VNC_canvas'), 'wss://test');
+        this._rfb = new RFB(document.getElementById('VNC_screen'), 'wss://test');
         this._rfb.viewOnly = true;
         this._rfb.addEventListener("disconnect",
                                    this._handleDisconnect.bind(this));
@@ -99,16 +99,16 @@ RecordingPlayer.prototype = {
         this._rfb._sock.send = function (arr) {};
         this._rfb._sock.close = function () {};
         this._rfb._sock.flush = function () {};
-        this._rfb._checkEvents = function () {};
-        this._rfb._connect = function () {
-            this._sock.init('binary', 'ws');
+        this._rfb._sock.open = function () {
+            this.init();
+            this._eventHandlers.open();
         };
     },
 
     _queueNextPacket: function () {
         if (!this._running) { return; }
 
-        var frame = this._frames[this._frame_index];
+        let frame = this._frames[this._frame_index];
 
         // skip send frames
         while (this._frame_index < this._frame_length && frame.charAt(0) === "}") {
@@ -129,8 +129,8 @@ RecordingPlayer.prototype = {
         }
 
         if (this._realtime) {
-            let foffset = frame.slice(1, frame.indexOf('{', 1));
-            let toffset = (new Date()).getTime() - this._start_time;
+            const foffset = frame.slice(1, frame.indexOf('{', 1));
+            const toffset = (new Date()).getTime() - this._start_time;
             let delay = foffset - toffset;
             if (delay < 1) delay = 1;
 
@@ -143,8 +143,8 @@ RecordingPlayer.prototype = {
     _doPacket: function () {
         // Avoid having excessive queue buildup in non-realtime mode
         if (this._trafficManagement && this._rfb._flushing) {
-            let player = this;
-            let orig = this._rfb._display.onflush;
+            const player = this;
+            const orig = this._rfb._display.onflush;
             this._rfb._display.onflush = function () {
                 player._rfb._display.onflush = orig;
                 player._rfb._onFlush();
@@ -154,12 +154,13 @@ RecordingPlayer.prototype = {
         }
 
         const frame = this._frames[this._frame_index];
-        var start = frame.indexOf('{', 1) + 1;
+        let start = frame.indexOf('{', 1) + 1;
+        let u8;
         if (this._encoding === 'base64') {
-            var u8 = Base64.decode(frame.slice(start));
+            u8 = Base64.decode(frame.slice(start));
             start = 0;
         } else {
-            var u8 = new Uint8Array(frame.length - start);
+            u8 = new Uint8Array(frame.length - start);
             for (let i = 0; i < frame.length - start; i++) {
                 u8[i] = frame.charCodeAt(start + i);
             }
@@ -173,7 +174,7 @@ RecordingPlayer.prototype = {
 
     _finish() {
         if (this._rfb._display.pending()) {
-            var player = this;
+            const player = this;
             this._rfb._display.onflush = function () {
                 if (player._rfb._flushing) {
                     player._rfb._onFlush();
@@ -183,12 +184,14 @@ RecordingPlayer.prototype = {
             this._rfb._display.flush();
         } else {
             this._running = false;
+            this._rfb._sock._eventHandlers.close({code: 1000, reason: ""});
+            delete this._rfb;
             this.onfinish((new Date()).getTime() - this._start_time);
         }
     },
 
-    _handleDisconnect(rfb, clean) {
+    _handleDisconnect(evt) {
         this._running = false;
-        this._disconnected(rfb, clean, this._frame_index);
+        this._disconnected(evt.detail.clean, this._frame_index);
     }
 };
